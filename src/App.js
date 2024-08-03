@@ -1,23 +1,38 @@
-import logo from './logo.svg';
-import './App.css';
+import "./index.css";
+import {Routes,Route} from "react-router-dom";
+import Home from "./pages/Home";
+import ItemEntry from "./pages/ItemEntry";
+import ItemRow from "./pages/ItemRow";
+import VendorSupplier from "./pages/VendorSupplier";
+import VendorDetails from "./pages/VendorDetails";
+import Sales from "./pages/Sales";
+import Purchase from "./pages/Purchase";
+import InvoiceGenerator from "./pages/InvoiceGenerator";
+import AddRow from "./pages/SalesRow";
+import PurchaseRow from "./pages/PurchaseRow";
+import { Toaster } from "react-hot-toast";
+
+
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div
+      className="bg-cover bg-center h-screen"
+      style={{ backgroundImage: `url('https://images.unsplash.com/photo-1721843431268-b8e380c6892f?q=80&w=2854&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')` }}
+    >
+     <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="/ItemEntry" element={<ItemEntry />} />
+      <Route path="/VendorSupplier" element={<VendorSupplier />} />
+      <Route path="/sales" element={<Sales />} />
+      <Route path="/purchase" element={<Purchase />} />
+      <Route path="/invoicegenerator" element={<InvoiceGenerator />} />
+      <Route path="/add-purchaserow" element={<PurchaseRow />} />
+      <Route path="/add-salesrow" element={<AddRow />} />
+      <Route path="/ItemRow" element={<ItemRow />} />
+      <Route path="/VendorDetails" element={<VendorDetails />} />
+     </Routes>
+     <Toaster/>
     </div>
   );
 }
