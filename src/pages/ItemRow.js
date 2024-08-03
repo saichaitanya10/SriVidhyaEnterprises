@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navibar from '../components/Navibar';
 import { initializeApp } from 'firebase/app';
-import { getFirestore, addDoc, collection } from 'firebase/firestore'; 
-import {toast} from 'react-hot-toast';
+import { getFirestore, addDoc, collection, getDocs } from 'firebase/firestore'; 
+import { toast } from 'react-hot-toast';
 
 const firebaseConfig = {
   apiKey: "AIzaSyBjeK6iwS-yU7HcqAN1IaYdRApSxo_PNzA",
@@ -21,7 +21,7 @@ const db = getFirestore(app);
 
 const ItemRow = () => {
   const [rows, setRows] = useState([{
-    serialNo: 1,
+    serialNo: 0, // Placeholder, will be updated dynamically
     date: '',
     itemCode: '',
     itemDescription: '',
@@ -32,9 +32,28 @@ const ItemRow = () => {
     taxAmount: '',
     purchaseAmountWithTax: '',
   }]);
-  const [serialCounter, setSerialCounter] = useState(2); // Start from 2 since 1 is used initially
   const [isAgreed, setIsAgreed] = useState(false);
   const navigate = useNavigate();
+
+  // Fetch the current number of items in the Firestore collection
+  useEffect(() => {
+    const fetchItemCount = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, 'items'));
+        const itemCount = querySnapshot.size;
+
+        // Update the serial number based on the current count
+        setRows(rows.map((row, index) => ({
+          ...row,
+          serialNo: itemCount + index + 1
+        })));
+      } catch (error) {
+        console.error("Error fetching item count: ", error);
+      }
+    };
+
+    fetchItemCount();
+  }, []);
 
   const handleInputChange = (index, field, value) => {
     const newRows = rows.map((row, i) => {
@@ -72,7 +91,7 @@ const ItemRow = () => {
       });
       toast.success('Form submitted successfully!');
       setRows([{
-        serialNo: serialCounter,
+        serialNo: rows.length + 1, // Set the next serial number
         date: '',
         itemCode: '',
         itemDescription: '',
@@ -83,7 +102,6 @@ const ItemRow = () => {
         taxAmount: '',
         purchaseAmountWithTax: '',
       }]);
-      setSerialCounter(serialCounter + 1); // Increment serial number for the next row
     } catch (error) {
       console.error("Error adding document: ", error);
       alert('Error submitting form');

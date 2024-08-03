@@ -1,19 +1,37 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navibar from '../components/Navibar';
+import { initializeApp } from 'firebase/app';
+import { getFirestore, collection, query, where, getDocs, addDoc } from 'firebase/firestore';
+import { toast } from 'react-hot-toast';
+
+// Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyBjeK6iwS-yU7HcqAN1IaYdRApSxo_PNzA",
+  authDomain: "sri-vidhya-enterprises.firebaseapp.com",
+  projectId: "sri-vidhya-enterprises",
+  storageBucket: "sri-vidhya-enterprises.appspot.com",
+  messagingSenderId: "877623071348",
+  appId: "1:877623071348:web:1d75d4660a42846d38b721",
+  measurementId: "G-NZBHTQHH4N"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
 const AddRow = () => {
   const [rows, setRows] = useState([{
     Date: '',
-    ItemName: '',
+    PartyName: '',
     GstNumber: '',
+    ItemName: '',
+    ItemDescription: '',
+    HsnSacCode: '',
     InvoiceNumber: '',
     Quantity: '',
-    HsnSacCode: '',
-    GstRate: '',
     TaxableValue: '',
-    CGST: '',
-    SGST: '',
+    GstRate: '',
     IGST: '',
     TotalTax: '',
     FinalAmount: '',
@@ -24,17 +42,105 @@ const AddRow = () => {
   const [isAgreed, setIsAgreed] = useState(false);
   const navigate = useNavigate();
 
+  const fetchItemDetails = async (itemCode, index) => {
+    try {
+      console.log('Fetching item details for itemCode:', itemCode);
+  
+      // Fetch all documents from the 'items' collection
+      const q = query(collection(db, 'items'));
+      const querySnapshot = await getDocs(q);
+      console.log('Query results:', querySnapshot.docs);
+  
+      let found = false;
+  
+      querySnapshot.forEach(doc => {
+        const data = doc.data();
+        
+        if (data.items && Array.isArray(data.items)) {
+          const item = data.items.find(i => i.itemCode === itemCode);
+          
+          if (item) {
+            const updatedRows = [...rows];
+            updatedRows[index] = {
+              ...updatedRows[index],
+              ItemDescription: item.itemDescription || '',
+              HsnSacCode: item.hsnCode || '',
+              GstRate: item.gstRate || '',
+            };
+            setRows(updatedRows);
+            toast.success("Item found 🥳🥳💃💃🎈🎈🎉🎉");
+            found = true;
+          }
+        }
+      });
+  
+      if (!found) {
+        toast.error('Item not found.');
+      }
+    } catch (error) {
+      console.error('Error fetching item details:', error);
+      setTimeout(() => {
+        toast.error('Error fetching item details: ' + error.message);
+      }, 2000); // 2000 milliseconds = 2 seconds
+    }
+  };
+
+  const fetchPartyDetails = async (partyName, index) => {
+    try {
+      console.log('Fetching vendor details for partyName:', partyName);
+  
+      // Fetch all documents from the 'vendors' collection
+      const q = query(collection(db, 'vendors'));
+      const querySnapshot = await getDocs(q);
+      console.log('Query results:', querySnapshot.docs);
+  
+      let found = false;
+  
+      querySnapshot.forEach(doc => {
+        const data = doc.data();
+        
+        if (data.partyName && data.partyName.toLowerCase() === partyName.toLowerCase()) {
+          const updatedRows = [...rows];
+          updatedRows[index] = {
+            ...updatedRows[index],
+            GstNumber: data.gstNumber || '',
+            BillingAddress: data.billingAddress || '',
+            ShippingAddress: data.shippingAddress || ''
+          };
+          setRows(updatedRows);
+          toast.success("Vendor found 🥳🥳💃💃🎈🎈🎉🎉");
+          found = true;
+        }
+      });
+  
+      if (!found) {
+        toast.error('Vendor not found.');
+      }
+    } catch (error) {
+      console.error('Error fetching vendor details:', error);
+      setTimeout(() => {
+        toast.error('Error fetching vendor details: ' + error.message);
+      }, 2000); // 2000 milliseconds = 2 seconds
+    }
+  };
+  
   const handleInputChange = (index, field, value) => {
     const newRows = rows.map((row, i) => {
       if (i === index) {
         row[field] = value;
 
+        if (field === 'ItemName') {
+          fetchItemDetails(value, index);
+        }
+
+        if(field === 'PartyName') {
+          fetchPartyDetails(value, index);
+        }
+  
         if (field === 'GstRate' || field === 'TaxableValue') {
           const gstRate = parseFloat(row.GstRate) || 0;
           const taxableValue = parseFloat(row.TaxableValue) || 0;
-
-          row.CGST = gstRate && !row.CGST ? ((gstRate / 2) / 100 * taxableValue).toFixed(2) : row.CGST;
-          row.SGST = gstRate && !row.SGST ? ((gstRate / 2) / 100 * taxableValue).toFixed(2) : row.SGST;
+  
           row.IGST = gstRate && !row.IGST ? (gstRate / 100 * taxableValue).toFixed(2) : row.IGST;
           row.TotalTax = gstRate ? (parseFloat(row.CGST) + parseFloat(row.SGST) + parseFloat(row.IGST)).toFixed(2) : row.TotalTax;
           row.FinalAmount = taxableValue ? (taxableValue + parseFloat(row.TotalTax)).toFixed(2) : row.FinalAmount;
@@ -49,14 +155,43 @@ const AddRow = () => {
     setIsAgreed(!isAgreed);
   };
 
-  const handleSubmit = (event) => {
-    event.preventDefault(); // Prevent the default form submission behavior
+  const handleSubmit = async (event) => {
+    event.preventDefault();
     if (!isAgreed) {
-      alert('You must agree with the terms and conditions to proceed.');
+      toast.error('You must agree with the terms and conditions to proceed.');
       return;
     }
-    alert('Form submitted successfully!');
-    // Handle form submission logic here
+
+    try {
+      await addDoc(collection(db, 'purchase'), {
+        purchaseDetails: rows,
+        createdAt: new Date()
+      });
+      toast.success('Form submitted successfully!');
+      setRows([{
+        Date: '',
+        ItemName: '',
+        ItemDescription: '',
+        PartyName: '',
+        GstNumber: '',
+        InvoiceNumber: '',
+        Quantity: '',
+        TaxableValue: '',
+        HsnSacCode: '',
+        GstRate: '',
+        IGST: '',
+        TotalTax: '',
+        FinalAmount: '',
+        PaymentMode: '',
+        Remark: '',
+        PaymentStatus: 'Pending'
+      }]);
+    } catch (error) {
+      console.error("Error adding document: ", error);
+      alert('Error submitting form');
+    }
+
+    navigate(-1);
   };
 
   const togglePaymentStatus = (index) => {
@@ -88,7 +223,7 @@ const AddRow = () => {
       <div className='p-10 w-full bg-zinc-800/40 h-screen backdrop-blur-sm'>
         <div className="container mx-auto">
           <div className="flex justify-between items-center mb-2">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Enter Purchase Details</h1>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Enter Purchase Details</h1>
             <button 
               onClick={() => navigate(-1)} 
               className="bg-gray-500 text-white py-2 px-6 rounded hover:bg-gray-600"
@@ -141,6 +276,23 @@ const AddRow = () => {
                         </button>
                       </div>
                     );
+                  } else if (key === 'GstRate' || key === 'IGST') {
+                    return (
+                      <div key={idx} className="col-span-1">
+                        <label className="block font-medium">{formatLabel(key)}</label>
+                        <select 
+                          value={row[key]}
+                          onChange={(e) => handleInputChange(index, key, e.target.value)}
+                          className="w-full border p-2 rounded"
+                        >
+                          <option value="">Select GST Rate</option>
+                          <option value="5">5%</option>
+                          <option value="12">12%</option>
+                          <option value="18">18%</option>
+                          <option value="28">28%</option>
+                        </select>
+                      </div>
+                    );
                   } else {
                     return (
                       <div key={idx} className="col-span-1">
@@ -177,6 +329,6 @@ const AddRow = () => {
       </div>
     </div>
   );
-}
+};
 
 export default AddRow;

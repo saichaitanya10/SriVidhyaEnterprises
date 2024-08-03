@@ -1,10 +1,44 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Navibar from '../components/Navibar';
 import { useNavigate } from 'react-router-dom';
+import { initializeApp } from 'firebase/app';
+import { getFirestore, collection, getDocs } from 'firebase/firestore';
+
+// Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyBjeK6iwS-yU7HcqAN1IaYdRApSxo_PNzA",
+  authDomain: "sri-vidhya-enterprises.firebaseapp.com",
+  projectId: "sri-vidhya-enterprises",
+  storageBucket: "sri-vidhya-enterprises.appspot.com",
+  messagingSenderId: "877623071348",
+  appId: "1:877623071348:web:1d75d4660a42846d38b721",
+  measurementId: "G-NZBHTQHH4N",
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
 const Sales = () => {
   const navigate = useNavigate();
+  const [salesData, setSalesData] = useState([]);
 
+  useEffect(() => {
+    const fetchSalesData = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, 'sales'));
+        const salesList = querySnapshot.docs.map(doc => doc.data());
+        setSalesData(salesList);
+      } catch (error) {
+        console.error("Error fetching sales data: ", error);
+      }
+    };
+
+    fetchSalesData();
+  }, []);
+
+  console.log(salesData);
+  
   const handleAddRow = () => {
     navigate('/add-salesrow');
   };
@@ -14,10 +48,8 @@ const Sales = () => {
       <Navibar />
       <div className='p-8 w-full bg-zinc-800/40 h-screen backdrop-blur-sm'>
         <div className="container mx-auto">
-          {/* Heading positioned closer to the Navibar */}
-          <h1 className="text-3xl font-bold text-gray-900 mb-4 ">Sales Transaction History</h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-4">Sales Transaction History</h1>
 
-          {/* Search and Add Row Buttons in a single row */}
           <div className="flex items-center justify-between mb-4 gap-4">
             <form className="flex-grow flex items-center border border-gray-300 rounded-lg bg-white shadow-md">
               <label htmlFor="default-search" className="sr-only">Search</label>
@@ -30,7 +62,7 @@ const Sales = () => {
                 <input 
                   type="search" 
                   id="default-search" 
-                  className="block w-full p-4 pl-10 text-sm text-gray-900  rounded-lg bg-white focus:ring-blue-500 focus:border-blue-500" 
+                  className="block w-full p-4 pl-10 text-sm text-gray-900 rounded-lg bg-white focus:ring-blue-500 focus:border-blue-500" 
                   placeholder="Search Product Name" 
                 />
               </div>
@@ -50,40 +82,51 @@ const Sales = () => {
             </button>
           </div>
 
-          {/* Table */}
           <div className="relative overflow-x-auto shadow-md sm:rounded-lg bg-white">
             <table className="w-full text-lg text-left rtl:text-right text-gray-500">
               <thead className="text-xs text-gray-700 uppercase bg-gray-200">
                 <tr>
                   <th scope="col" className="px-6 py-3">Date</th>
                   <th scope="col" className="px-6 py-3">Product Name</th>
+                  <th scope="col" className="px-6 py-3">Description</th>
+                  <th scope="col" className="px-6 py-3">HSN/SAC Code</th>
                   <th scope="col" className="px-6 py-3">GST Number</th>
+                  <th scope="col" className="px-6 py-3">Invoice Number</th>
                   <th scope="col" className="px-6 py-3">Quantity</th>
-                  <th scope="col" className="px-6 py-3">Cost</th>
+                  <th scope="col" className="px-6 py-3">Taxable Value</th>
+                  <th scope="col" className="px-6 py-3">GST Rate</th>
+                  <th scope="col" className="px-6 py-3">CGST</th>
+                  <th scope="col" className="px-6 py-3">SGST</th>
+                  <th scope="col" className="px-6 py-3">IGST</th>
+                  <th scope="col" className="px-6 py-3">Total Tax</th>
+                  <th scope="col" className="px-6 py-3">Final Amount</th>
+                  <th scope="col" className="px-6 py-3">Payment Mode</th>
+                  <th scope="col" className="px-6 py-3">Remark</th>
+                  <th scope="col" className="px-6 py-3">Payment Status</th>
                 </tr>
               </thead>
               <tbody>
-                <tr className="bg-white border-b">
-                  <td className="px-6 py-4">2024-07-01</td>
-                  <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">Apple MacBook Pro 17"</th>
-                  <td className="px-6 py-4">123456789</td>
-                  <td className="px-6 py-4">10</td>
-                  <td className="px-6 py-4 text-green-600">$2999</td>
-                </tr>
-                <tr className="bg-white border-b">
-                  <td className="px-6 py-4">2024-07-02</td>
-                  <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">Microsoft Surface Pro</th>
-                  <td className="px-6 py-4">987654321</td>
-                  <td className="px-6 py-4">5</td>
-                  <td className="px-6 py-4 text-green-600">$1999</td>
-                </tr>
-                <tr className="bg-white">
-                  <td className="px-6 py-4">2024-07-03</td>
-                  <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">Magic Mouse 2</th>
-                  <td className="px-6 py-4">456789123</td>
-                  <td className="px-6 py-4">20</td>
-                  <td className="px-6 py-4 text-green-600">$99</td>
-                </tr>
+                {salesData.map((sale, index) => (
+                  <tr key={index} className="bg-white border-b">
+                    <td className="px-6 py-4">{new Date(sale.createdAt.seconds * 1000).toLocaleDateString()}</td>
+                    <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">{sale.ItemName}</th>
+                    <td className="px-6 py-4">{sale.salesDetails[0].ItemDescription}</td>
+                    <td className="px-6 py-4">{sale.salesDetails[0].HsnSacCode}</td>
+                    <td className="px-6 py-4">{sale.salesDetails[0].GstNumber}</td>
+                    <td className="px-6 py-4">{sale.salesDetails[0].InvoiceNumber}</td>
+                    <td className="px-6 py-4">{sale.salesDetails[0].Quantity}</td>
+                    <td className="px-6 py-4">{sale.salesDetails[0].TaxableValue}</td>
+                    <td className="px-6 py-4">{sale.salesDetails[0].GstRate}</td>
+                    <td className="px-6 py-4">{sale.salesDetails[0].CGST}</td>
+                    <td className="px-6 py-4">{sale.salesDetails[0].SGST}</td>
+                    <td className="px-6 py-4">{sale.salesDetails[0].IGST}</td>
+                    <td className="px-6 py-4">{sale.salesDetails[0].TotalTax}</td>
+                    <td className="px-6 py-4">{sale.salesDetails[0].FinalAmount}</td>
+                    <td className="px-6 py-4">{sale.salesDetails[0].PaymentMode}</td>
+                    <td className="px-6 py-4">{sale.salesDetails[0].Remark}</td>
+                    <td className="px-6 py-4">{sale.salesDetails[0].PaymentStatus}</td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>

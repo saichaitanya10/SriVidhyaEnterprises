@@ -40,15 +40,15 @@ const MainContent = () => {
           <img className='w-4/5 h-auto' src={Vendor} />
         </a>
 
-        <a href='/sales' className='w-1/6 bg-white p-4 rounded-lg flex flex-col items-center'>
-          <h1 className='text-xl font-semibold mb-2'>Sales Entry</h1>
-          <img className='w-4/5 mt-8 h-auto' src={sales} />
-        </a>
-
         <a href='/purchase' className='w-1/6 bg-white p-4 rounded-lg flex flex-col items-center'>
           <h1 className='text-xl font-semibold mb-2'>Purchase Entry</h1>
           <img className='w-4/5 mt-8 h-auto' src={purchase} />
         </a>
+
+        <a href='/sales' className='w-1/6 bg-white p-4 rounded-lg flex flex-col items-center'>
+          <h1 className='text-xl font-semibold mb-2'>Sales Entry</h1>
+          <img className='w-4/5 mt-8 h-auto' src={sales} />
+        </a>   
 
         <a href='/InvoiceGenerator' className='w-1/6 bg-white p-4 rounded-lg flex flex-col items-center'>
           <h1 className='text-xl font-semibold mb-2'>Generate Invoice/Delivery Challan</h1>

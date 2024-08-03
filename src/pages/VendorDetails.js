@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navibar from '../components/Navibar';
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, addDoc } from "firebase/firestore";
+import { getFirestore, collection, addDoc, getDocs } from "firebase/firestore";
 import { toast } from 'react-hot-toast';
 
 // Firebase configuration
@@ -23,7 +23,7 @@ const db = getFirestore(app);
 const VendorDetails = () => {
   const [vendors, setVendors] = useState([
     {
-      serialNo: 1,
+      serialNo: 0, // Placeholder, will be updated dynamically
       partyName: '',
       contactNumber: '+91',
       gstNumber: '',
@@ -34,6 +34,25 @@ const VendorDetails = () => {
 
   const [isAgreed, setIsAgreed] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchVendorCount = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "vendors"));
+        const vendorCount = querySnapshot.size;
+
+        // Update the serial number based on the current count
+        setVendors(vendors.map((vendor, index) => ({
+          ...vendor,
+          serialNo: vendorCount + index + 1
+        })));
+      } catch (error) {
+        console.error("Error fetching vendor count: ", error);
+      }
+    };
+
+    fetchVendorCount();
+  }, []);
 
   const handleInputChange = (index, field, value) => {
     const newVendors = vendors.map((vendor, i) => {
@@ -92,9 +111,8 @@ const VendorDetails = () => {
       <Navibar />
       <div className='p-20 w-full bg-zinc-800/40 h-screen backdrop-blur-sm'>
         <div className="container mx-auto p-4">
-        
-        <div className="flex justify-between items-center mb-4">
-        <h1 className="text-3xl font-bold text-gray-900 ">Enter Vendor Details</h1>
+          <div className="flex justify-between items-center mb-4">
+            <h1 className="text-3xl font-bold text-gray-900 ">Enter Vendor Details</h1>
             <button 
               onClick={() => navigate(-1)} 
               className="bg-gray-500 text-white py-2 px-6 rounded hover:bg-gray-600"
@@ -109,7 +127,7 @@ const VendorDetails = () => {
                   <label className="block font-medium">Serial No</label>
                   <input
                     type="text"
-                    value={index + 1} // Auto-generated serial number
+                    value={vendor.serialNo} // Updated serial number
                     readOnly
                     className="w-full border p-2 rounded"
                   />
@@ -162,6 +180,7 @@ const VendorDetails = () => {
               </div>
             </div>
           ))}
+
           <div className="flex items-center mb-4 mt-4">
             <input
               type="checkbox"
@@ -180,7 +199,6 @@ const VendorDetails = () => {
         </div>
       </div>
     </div>
-  );
-};
+)};
 
 export default VendorDetails;

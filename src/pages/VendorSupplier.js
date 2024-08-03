@@ -22,17 +22,23 @@ const db = getFirestore(app);
 const VendorSupplier = () => {
   const navigate = useNavigate();
   const [vendors, setVendors] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filteredVendors, setFilteredVendors] = useState([]);
 
   useEffect(() => {
     const fetchVendors = async () => {
       try {
         const querySnapshot = await getDocs(collection(db, "vendors"));
-        const vendorsList = querySnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data(),
-          createdAt: doc.data().createdAt?.toDate().toLocaleDateString() || 'N/A' // Format date
-        }));
+        const vendorsList = querySnapshot.docs.map(doc => {
+          const data = doc.data();
+          return {
+            id: doc.id,
+            ...data,
+            createdAt: data.createdAt ? data.createdAt.toDate().toLocaleDateString() : 'N/A'
+          };
+        });
         setVendors(vendorsList);
+        setFilteredVendors(vendorsList);
       } catch (error) {
         console.error("Error fetching vendor data: ", error);
       }
@@ -40,6 +46,13 @@ const VendorSupplier = () => {
 
     fetchVendors();
   }, []);
+
+  useEffect(() => {
+    const results = vendors.filter(vendor =>
+      vendor.partyName.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredVendors(results);
+  }, [searchTerm, vendors]);
 
   const handleAddRow = () => {
     navigate('/VendorDetails'); // Adjust the navigation path as needed
@@ -55,6 +68,10 @@ const VendorSupplier = () => {
     setVendors(newVendors);
   };
 
+  const handleSearchChange = (event) => {
+    setSearchTerm(event.target.value);
+  };
+
   return (
     <div>
       <Navibar />
@@ -63,7 +80,10 @@ const VendorSupplier = () => {
           <h1 className="text-3xl font-bold text-gray-900 mb-4">Vendor Details</h1>
 
           <div className="flex items-center justify-between mb-4 gap-4">
-            <form className="flex-grow flex items-center border border-gray-300 rounded-lg bg-white shadow-md">
+            <form 
+              className="flex-grow flex items-center border border-gray-300 rounded-lg bg-white shadow-md"
+              onSubmit={(e) => e.preventDefault()} // Prevent form submission
+            >
               <label htmlFor="default-search" className="sr-only">Search</label>
               <div className="relative flex-grow">
                 <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
@@ -76,6 +96,8 @@ const VendorSupplier = () => {
                   id="default-search" 
                   className="block w-full p-4 pl-10 text-sm text-gray-900 rounded-lg bg-white focus:ring-blue-500 focus:border-blue-500" 
                   placeholder="Search Party Name" 
+                  value={searchTerm}
+                  onChange={handleSearchChange}
                 />
               </div>
               <button 
@@ -107,7 +129,7 @@ const VendorSupplier = () => {
                 </tr>
               </thead>
               <tbody>
-                {vendors.map((vendor, index) => (
+                {filteredVendors.map((vendor, index) => (
                   <tr key={vendor.id} className="bg-white">
                     <td className="px-4 py-4 whitespace-nowrap">{vendor.createdAt}</td>
                     <td className="px-6 py-4">
