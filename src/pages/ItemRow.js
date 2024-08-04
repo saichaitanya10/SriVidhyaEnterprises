@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import Navibar from '../components/Navibar';
 import { initializeApp } from 'firebase/app';
-import { getFirestore, addDoc, collection, getDocs } from 'firebase/firestore'; 
+import { getFirestore, addDoc, collection, getDocs, doc, getDoc, setDoc } from 'firebase/firestore'; 
 import { toast } from 'react-hot-toast';
 
 const firebaseConfig = {
@@ -34,26 +34,56 @@ const ItemRow = () => {
   }]);
   const [isAgreed, setIsAgreed] = useState(false);
   const navigate = useNavigate();
+  const { id } = useParams(); // Get the ID from the URL
 
-  // Fetch the current number of items in the Firestore collection
+  // Fetch item count and details if editing
   useEffect(() => {
-    const fetchItemCount = async () => {
-      try {
-        const querySnapshot = await getDocs(collection(db, 'items'));
-        const itemCount = querySnapshot.size;
+    const fetchItemData = async () => {
+      if (id) {
+        // Fetch details for editing
+        try {
+          const docRef = doc(db, 'items', id);
+          const docSnap = await getDoc(docRef);
 
-        // Update the serial number based on the current count
-        setRows(rows.map((row, index) => ({
-          ...row,
-          serialNo: itemCount + index + 1
-        })));
-      } catch (error) {
-        console.error("Error fetching item count: ", error);
+          if (docSnap.exists()) {
+            const data = docSnap.data();
+            setRows(data.items || [{
+              serialNo: 0,
+              date: '',
+              itemCode: '',
+              itemDescription: '',
+              hsnCode: '',
+              unitOfMeasurement: '',
+              purchasePrice: '',
+              gstRate: '',
+              taxAmount: '',
+              purchaseAmountWithTax: '',
+            }]);
+          } else {
+            console.log("No such document!");
+          }
+        } catch (error) {
+          console.error("Error fetching item details: ", error);
+        }
+      } else {
+        // Fetch item count for new entry
+        try {
+          const querySnapshot = await getDocs(collection(db, 'items'));
+          const itemCount = querySnapshot.size;
+
+          // Update the serial number based on the current count
+          setRows(rows.map((row, index) => ({
+            ...row,
+            serialNo: itemCount + index + 1
+          })));
+        } catch (error) {
+          console.error("Error fetching item count: ", error);
+        }
       }
     };
 
-    fetchItemCount();
-  }, []);
+    fetchItemData();
+  }, [id]);
 
   const handleInputChange = (index, field, value) => {
     const newRows = rows.map((row, i) => {
@@ -85,11 +115,20 @@ const ItemRow = () => {
     }
 
     try {
-      await addDoc(collection(db, 'items'), {
-        items: rows,
-        createdAt: new Date()
-      });
-      toast.success('Form submitted successfully!');
+      if (id) {
+        // Update existing item
+        const docRef = doc(db, 'items', id);
+        await setDoc(docRef, { items: rows, updatedAt: new Date() }, { merge: true });
+        toast.success('Item updated successfully!');
+      } else {
+        // Add new item
+        await addDoc(collection(db, 'items'), {
+          items: rows,
+          createdAt: new Date()
+        });
+        toast.success('New item added successfully!');
+      }
+      
       setRows([{
         serialNo: rows.length + 1, // Set the next serial number
         date: '',
@@ -103,7 +142,7 @@ const ItemRow = () => {
         purchaseAmountWithTax: '',
       }]);
     } catch (error) {
-      console.error("Error adding document: ", error);
+      console.error("Error submitting form: ", error);
       alert('Error submitting form');
     }
 
@@ -116,7 +155,9 @@ const ItemRow = () => {
       <div className='p-12 w-full bg-zinc-800/40 h-screen backdrop-blur-sm'>
         <div className="container mx-auto">
           <div className="flex justify-between items-center mb-4">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Enter Item Details</h1>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              {id ? 'Edit Item Details' : 'Enter Item Details'}
+            </h1>
             <button 
               onClick={() => navigate(-1)} 
               className="bg-gray-500 text-white py-2 px-6 rounded hover:bg-gray-600"
@@ -204,7 +245,8 @@ const ItemRow = () => {
                     onChange={(e) => handleInputChange(index, 'gstRate', e.target.value)}
                     className="w-full border p-2 rounded"
                   >
-                    <option value="">Select GST</option>
+                    <option value="">Select GST Rate</option>
+                    <option value="0">0%</option>
                     <option value="5">5%</option>
                     <option value="12">12%</option>
                     <option value="18">18%</option>
@@ -221,7 +263,7 @@ const ItemRow = () => {
                   />
                 </div>
                 <div className="col-span-1">
-                  <label className="block font-medium">Purchase Amount (with Tax)</label>
+                  <label className="block font-medium">Purchase Amount with Tax</label>
                   <input
                     type="text"
                     value={row.purchaseAmountWithTax}
@@ -247,7 +289,7 @@ const ItemRow = () => {
             onClick={handleSubmit}
             className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
           >
-            Submit
+            {id ? 'Update' : 'Submit'}
           </button>
         </div>
       </div>
@@ -256,3 +298,4 @@ const ItemRow = () => {
 };
 
 export default ItemRow;
+  

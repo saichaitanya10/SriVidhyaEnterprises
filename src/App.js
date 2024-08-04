@@ -30,6 +30,7 @@ function App() {
       <Route path="/add-purchaserow" element={<PurchaseRow />} />
       <Route path="/add-salesrow" element={<AddRow />} />
       <Route path="/ItemRow" element={<ItemRow />} />
+      <Route path="/ItemRow/:id" element={<ItemRow />} />
       <Route path="/VendorDetails" element={<VendorDetails />} />
      </Routes>
      <Toaster/>

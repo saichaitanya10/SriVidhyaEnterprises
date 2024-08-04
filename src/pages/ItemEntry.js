@@ -2,7 +2,9 @@ import React, { useEffect, useState } from 'react';
 import Navibar from '../components/Navibar';
 import { useNavigate } from 'react-router-dom';
 import { initializeApp } from 'firebase/app';
-import { getFirestore, collection, onSnapshot } from 'firebase/firestore';
+import { getFirestore, collection, onSnapshot, doc, deleteDoc } from 'firebase/firestore';
+import dayjs from 'dayjs';
+import toast from 'react-hot-toast';
 
 // Firebase configuration
 const firebaseConfig = {
@@ -54,6 +56,29 @@ const ItemEntry = () => {
     navigate('/ItemRow'); // Adjust the navigation path as needed
   };
 
+  // Handle edit action
+  const handleEdit = (id) => {
+    // Implement the edit functionality as needed
+    navigate(`/ItemRow/${id}`);
+  };
+
+  // Handle delete action
+  const handleDelete = async (id) => {
+    if (window.confirm('Are you sure you want to delete this item?')) {
+      try {
+        await deleteDoc(doc(db, 'items', id));
+        toast.success('Item Deleted successfully!');
+      } catch (error) {
+        console.error('Error deleting item: ', error);
+      }
+    }
+  };
+
+  // Format date
+  const formatDate = (date) => {
+    return dayjs(date).format('D/M/YYYY');
+  };
+
   return (
     <div>
       <Navibar />
@@ -98,36 +123,55 @@ const ItemEntry = () => {
 
           {/* Table */}
           <div className="relative overflow-x-auto shadow-md sm:rounded-lg bg-white mb-4" style={{ maxHeight: '500px', overflowY: 'auto' }}>
-            <table className="w-full text-lg text-left rtl:text-right text-gray-500">
+            <table className="w-full text-sm text-left rtl:text-right text-gray-500">
               <thead className="text-xs text-gray-700 uppercase bg-gray-200">
                 <tr>
+                  <th scope="col" className="px-6 py-3">S.No</th>
                   <th scope="col" className="px-6 py-3">Date</th>
                   <th scope="col" className="px-6 py-3">Item Code</th>
                   <th scope="col" className="px-6 py-3">Item Description</th>
                   <th scope="col" className="px-6 py-3">HSN Code</th>
                   <th scope="col" className="px-6 py-3">Unit of Measurement</th>
+                  <th scope="col" className="px-6 py-3">Purchase Amount (without tax)</th>
                   <th scope="col" className="px-6 py-3">GST Rate</th>
                   <th scope="col" className="px-6 py-3">Tax Amount</th>
-                  <th scope="col" className="px-6 py-3">Purchase Amount (without tax)</th>
+                  <th scope="col" className="px-6 py-3">Purchase Amount (with tax)</th>
+                  <th scope="col" className="px-6 py-3">Actions</th>
                 </tr>
               </thead>
               <tbody className='overflow-y-scroll'>
                 {filteredItems.length > 0 ? (
                   filteredItems.map((item, index) => (
-                    <tr key={index} className="bg-white border-b">
-                      <td className="px-6 py-4">{item.items[0].date || 'N/A'}</td>
+                    <tr key={item.id} className="bg-white border-b">
+                      <td className="px-6 py-4">{index + 1}</td>
+                      <td className="px-6 py-4">{formatDate(item.items[0].date) || 'N/A'}</td>
                       <td className="px-6 py-4">{item.items[0].itemCode || 'N/A'}</td>
                       <td className="px-6 py-4">{item.items[0].itemDescription || 'N/A'}</td>
                       <td className="px-6 py-4">{item.items[0].hsnCode || 'N/A'}</td>
                       <td className="px-6 py-4">{item.items[0].unitOfMeasurement || 'N/A'}</td>
-                      <td className="px-6 py-4">{item.items[0].gstRate || 'N/A'}</td>
-                      <td className="px-6 py-4">{item.items[0].taxAmount || 'N/A'}</td>
                       <td className="px-6 py-4 text-green-600">{`₹${item.items[0].purchasePrice || '0'}`}</td>
+                      <td className="px-6 py-4">{item.items[0].gstRate ? `${item.items[0].gstRate}%` : 'N/A'}</td>
+                      <td className="px-6 py-4">{item.items[0].taxAmount || 'N/A'}</td>
+                      <td className="px-6 py-4 text-green-600">{`₹${item.items[0].purchaseAmountWithTax || '0'}`}</td>
+                      <td className="px-6 py-4">
+                        <button 
+                          onClick={() => handleEdit(item.id)} 
+                          className="text-blue-600 hover:underline mr-2"
+                        >
+                          Edit
+                        </button>
+                        <button 
+                          onClick={() => handleDelete(item.id)} 
+                          className="text-red-600 hover:underline"
+                        >
+                          Delete
+                        </button>
+                      </td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="8" className="px-6 py-4 text-center text-gray-500">No items found</td>
+                    <td colSpan="11" className="px-6 py-4 text-center text-gray-500">No items found</td>
                   </tr>
                 )}
               </tbody>
