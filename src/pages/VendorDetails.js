@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import Navibar from '../components/Navibar';
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, addDoc, getDocs } from "firebase/firestore";
+import { getFirestore, collection, addDoc, getDoc, doc, updateDoc, getDocs } from "firebase/firestore"; // Add getDocs here
 import { toast } from 'react-hot-toast';
 
 // Firebase configuration
@@ -34,25 +34,49 @@ const VendorDetails = () => {
 
   const [isAgreed, setIsAgreed] = useState(false);
   const navigate = useNavigate();
+  const { id } = useParams(); // Get the id from URL parameters
 
   useEffect(() => {
-    const fetchVendorCount = async () => {
-      try {
-        const querySnapshot = await getDocs(collection(db, "vendors"));
-        const vendorCount = querySnapshot.size;
+    const fetchVendor = async () => {
+      if (id) {
+        try {
+          const vendorDoc = await getDoc(doc(db, "vendors", id));
+          if (vendorDoc.exists()) {
+            const data = vendorDoc.data();
+            setVendors([{
+              ...data,
+              createdAt: data.createdAt ? data.createdAt.toDate().toLocaleDateString() : 'N/A'
+            }]);
+          } else {
+            toast.error('Vendor not found!');
+            navigate('/VendorSupplier'); // Redirect if vendor not found
+          }
+        } catch (error) {
+          console.error("Error fetching vendor data: ", error);
+        }
+      } else {
+        // Fetch vendor count if adding a new vendor
+        const fetchVendorCount = async () => {
+          try {
+            const querySnapshot = await getDocs(collection(db, "vendors"));
+            const vendorCount = querySnapshot.size;
 
-        // Update the serial number based on the current count
-        setVendors(vendors.map((vendor, index) => ({
-          ...vendor,
-          serialNo: vendorCount + index + 1
-        })));
-      } catch (error) {
-        console.error("Error fetching vendor count: ", error);
+            // Update the serial number based on the current count
+            setVendors(vendors.map((vendor, index) => ({
+              ...vendor,
+              serialNo: vendorCount + index + 1
+            })));
+          } catch (error) {
+            console.error("Error fetching vendor count: ", error);
+          }
+        };
+
+        fetchVendorCount();
       }
     };
 
-    fetchVendorCount();
-  }, []);
+    fetchVendor();
+  }, [id]);
 
   const handleInputChange = (index, field, value) => {
     const newVendors = vendors.map((vendor, i) => {
@@ -97,11 +121,18 @@ const VendorDetails = () => {
     }));
 
     try {
-      await addDoc(collection(db, "vendors"), vendorWithDate[0]);
-      toast.success('Form submitted successfully!');
-      navigate(-1);
+      if (id) {
+        // Update existing vendor
+        await updateDoc(doc(db, "vendors", id), vendorWithDate[0]);
+        toast.success('Vendor updated successfully!');
+      } else {
+        // Add new vendor
+        await addDoc(collection(db, "vendors"), vendorWithDate[0]);
+        toast.success('Vendor added successfully!');
+      }
+      navigate('/VendorSupplier'); // Redirect to vendor list
     } catch (error) {
-      console.error("Error adding document: ", error);
+      console.error("Error saving vendor: ", error);
       alert('Error submitting the form. Please try again.');
     }
   };
@@ -112,9 +143,11 @@ const VendorDetails = () => {
       <div className='p-20 w-full bg-zinc-800/40 h-screen backdrop-blur-sm'>
         <div className="container mx-auto p-4">
           <div className="flex justify-between items-center mb-4">
-            <h1 className="text-3xl font-bold text-gray-900 ">Enter Vendor Details</h1>
+            <h1 className="text-3xl font-bold text-gray-900 ">
+              {id ? 'Edit Vendor Details' : 'Enter Vendor Details'}
+            </h1>
             <button 
-              onClick={() => navigate(-1)} 
+              onClick={() => navigate('/VendorSupplier')} 
               className="bg-gray-500 text-white py-2 px-6 rounded hover:bg-gray-600"
             >
               Back
@@ -194,11 +227,12 @@ const VendorDetails = () => {
             onClick={handleSubmit}
             className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
           >
-            Submit
+            {id ? 'Update' : 'Submit'}
           </button>
         </div>
       </div>
     </div>
-)};
+  );
+};
 
 export default VendorDetails;

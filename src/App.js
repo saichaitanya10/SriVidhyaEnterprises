@@ -11,6 +11,8 @@ import InvoiceGenerator from "./pages/InvoiceGenerator";
 import AddRow from "./pages/SalesRow";
 import PurchaseRow from "./pages/PurchaseRow";
 import { Toaster } from "react-hot-toast";
+import EditSalesRow from "./pages/EditSalesRow";
+import EditPurchaseRow from "./pages/EditPurchaseRow";
 
 
 
@@ -28,10 +30,13 @@ function App() {
       <Route path="/purchase" element={<Purchase />} />
       <Route path="/invoicegenerator" element={<InvoiceGenerator />} />
       <Route path="/add-purchaserow" element={<PurchaseRow />} />
+      <Route path="/add-purchaserow/:id" element={<EditPurchaseRow />} />
       <Route path="/add-salesrow" element={<AddRow />} />
+      <Route path="/add-salesrow/:id" element={<EditSalesRow />} />
       <Route path="/ItemRow" element={<ItemRow />} />
       <Route path="/ItemRow/:id" element={<ItemRow />} />
       <Route path="/VendorDetails" element={<VendorDetails />} />
+      <Route path="/VendorDetails/:id" element={<VendorDetails />} />
      </Routes>
      <Toaster/>
     </div>

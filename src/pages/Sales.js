@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import Navibar from '../components/Navibar';
 import { useNavigate } from 'react-router-dom';
 import { initializeApp } from 'firebase/app';
-import { getFirestore, collection, getDocs } from 'firebase/firestore';
+import { getFirestore, collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
+import { toast } from 'react-hot-toast';
 
 // Firebase configuration
 const firebaseConfig = {
@@ -27,7 +28,10 @@ const Sales = () => {
     const fetchSalesData = async () => {
       try {
         const querySnapshot = await getDocs(collection(db, 'sales'));
-        const salesList = querySnapshot.docs.map(doc => doc.data());
+        const salesList = querySnapshot.docs.map(doc => ({
+          id: doc.id, // Include the document id
+          ...doc.data()
+        }));
         setSalesData(salesList);
       } catch (error) {
         console.error("Error fetching sales data: ", error);
@@ -37,8 +41,21 @@ const Sales = () => {
     fetchSalesData();
   }, []);
 
-  console.log(salesData);
-  
+  const handleEdit = (id) => {
+    navigate(`/add-salesrow/${id}`); // Navigate to the edit page with the id as a parameter
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      await deleteDoc(doc(db, 'sales', id));
+      toast.success('Document deleted successfully!');
+      setSalesData(salesData.filter(sale => sale.id !== id)); // Remove deleted document from state
+    } catch (error) {
+      console.error("Error deleting document: ", error);
+      toast.error('Error deleting document.');
+    }
+  };
+
   const handleAddRow = () => {
     navigate('/add-salesrow');
   };
@@ -103,13 +120,14 @@ const Sales = () => {
                   <th scope="col" className="px-6 py-3">Payment Mode</th>
                   <th scope="col" className="px-6 py-3">Remark</th>
                   <th scope="col" className="px-6 py-3">Payment Status</th>
+                  <th scope="col" className="px-6 py-3">Actions</th> {/* Added Actions Column */}
                 </tr>
               </thead>
               <tbody>
-                {salesData.map((sale, index) => (
-                  <tr key={index} className="bg-white border-b">
+                {salesData.map((sale) => (
+                  <tr key={sale.id} className="bg-white border-b">
                     <td className="px-6 py-4">{new Date(sale.createdAt.seconds * 1000).toLocaleDateString()}</td>
-                    <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">{sale.ItemName}</th>
+                    <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">{sale.salesDetails[0].ItemName}</td>
                     <td className="px-6 py-4">{sale.salesDetails[0].ItemDescription}</td>
                     <td className="px-6 py-4">{sale.salesDetails[0].HsnSacCode}</td>
                     <td className="px-6 py-4">{sale.salesDetails[0].GstNumber}</td>
@@ -125,6 +143,20 @@ const Sales = () => {
                     <td className="px-6 py-4">{sale.salesDetails[0].PaymentMode}</td>
                     <td className="px-6 py-4">{sale.salesDetails[0].Remark}</td>
                     <td className="px-6 py-4">{sale.salesDetails[0].PaymentStatus}</td>
+                    <td className="px-6 py-4 flex">
+                    <button 
+                          onClick={() => handleEdit(sale.id)} 
+                          className="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 focus:ring-4 focus:outline-none focus:ring-yellow-300 mr-2"
+                        >
+                          Edit
+                        </button>
+                        <button 
+                          onClick={() => handleDelete(sale.id)} 
+                          className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-red-300"
+                        >
+                          Delete
+                        </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>

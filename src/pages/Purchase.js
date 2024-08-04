@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import Navibar from '../components/Navibar';
 import { useNavigate } from 'react-router-dom';
-import { getFirestore, collection, query, orderBy, getDocs } from 'firebase/firestore';
+import { getFirestore, collection, query, orderBy, getDocs, deleteDoc, doc } from 'firebase/firestore';
+import toast from 'react-hot-toast';
 
 const PurchaseRow = () => {
   const navigate = useNavigate();
@@ -11,7 +12,6 @@ const PurchaseRow = () => {
   useEffect(() => {
     const fetchPurchases = async () => {
       try {
-        // Create a query to get documents from 'purchase' collection, ordered by 'createdAt'
         const q = query(collection(db, 'purchase'), orderBy('createdAt', 'desc'));
         const querySnapshot = await getDocs(q);
         const fetchedPurchases = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -28,6 +28,20 @@ const PurchaseRow = () => {
     navigate('/add-purchaserow');
   };
 
+  const handleEdit = (id) => {
+    navigate(`/add-purchaserow/${id}`);
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      await deleteDoc(doc(db, 'purchase', id));
+      setPurchases(purchases.filter(purchase => purchase.id !== id));
+      toast.success("Successfully deleted purchase")
+    } catch (error) {
+      console.error('Error deleting purchase:', error);
+    }
+  };
+
   return (
     <div>
       <Navibar />
@@ -35,7 +49,6 @@ const PurchaseRow = () => {
         <div className="container mx-auto">
           <h1 className="text-3xl font-bold text-gray-900 mb-4">Purchase Transaction History</h1>
           
-          {/* Search and Add Row Buttons in a single row */}
           <div className="flex items-center justify-between mb-4 gap-4">
             <form className="flex-grow flex items-center border border-gray-300 rounded-lg bg-white shadow-md">
               <label htmlFor="default-search" className="sr-only">Search</label>
@@ -68,41 +81,41 @@ const PurchaseRow = () => {
             </button>
           </div>
 
-          {/* Table */}
           <div className="relative overflow-x-auto shadow-md sm:rounded-lg bg-white">
             <table className="w-full text-lg text-left rtl:text-right text-gray-500">
               <thead className="text-xs text-zinc-700 uppercase bg-gray-50">
-                <tr>
-                  <th scope="col" className="px-6 py-3">Date</th>
-                  <th scope="col" className="px-6 py-3">Party Name</th>
+                <tr className='bg-zinc-200'>
+                  <th scope="col" className="px-6 py-3 whitespace-nowrap">Date</th>
+                  <th scope="col" className="px-6 py-3 whitespace-nowrap">Party Name</th>
                   <th scope="col" className="px-6 py-3">GST Number</th>
                   <th scope="col" className="px-6 py-3">Item Name</th>
                   <th scope="col" className="px-6 py-3">Item Description</th>
-                  <th scope="col" className="px-6 py-3">HSN/SAC Code</th>
-                  <th scope="col" className="px-6 py-3">Invoice Number</th>
+                  <th scope="col" className="px-6 py-3 whitespace-nowrap">HSN/SAC Code</th>
+                  <th scope="col" className="px-6 py-3 whitespace-nowrap">Invoice Number</th>
                   <th scope="col" className="px-6 py-3">Quantity</th>
-                  <th scope="col" className="px-6 py-3">Taxable Value</th>
+                  <th scope="col" className="px-6 py-3 whitespace-nowrap">Taxable Value</th>
                   <th scope="col" className="px-6 py-3">GST Rate</th>
                   <th scope="col" className="px-6 py-3">IGST</th>
-                  <th scope="col" className="px-6 py-3">Total Tax</th>
+                  <th scope="col" className="px-6 py-3 ">Total Tax</th>
                   <th scope="col" className="px-6 py-3">Final Amount</th>
                   <th scope="col" className="px-6 py-3">Payment Mode</th>
                   <th scope="col" className="px-6 py-3">Remark</th>
                   <th scope="col" className="px-6 py-3">Payment Status</th>
+                  <th scope="col" className="px-6 py-3">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {purchases.map((purchase) => (
                   <React.Fragment key={purchase.id}>
                     {purchase.purchaseDetails.map((row, idx) => (
-                      <tr key={idx} className="bg-white border-b">
-                        <td className="px-6 py-4">{row.Date}</td>
-                        <td className="px-6 py-4">{row.PartyName}</td>
+                      <tr key={idx} className="bg-white text-sm border-b">
+                        <td className="px-6 py-4 whitespace-nowrap">{row.Date}</td>
+                        <td className="px-6 py-4 ">{row.PartyName}</td>
                         <td className="px-6 py-4">{row.GstNumber}</td>
-                        <td className="px-6 py-4">{row.ItemName}</td>
-                        <td className="px-6 py-4">{row.ItemDescription}</td>
-                        <td className="px-6 py-4">{row.HsnSacCode}</td>
-                        <td className="px-6 py-4">{row.InvoiceNumber}</td>
+                        <td className="px-6 py-4 whitespace-nowrap">{row.ItemName}</td>
+                        <td className="px-6 py-4 whitespace-nowrap">{row.ItemDescription}</td>
+                        <td className="px-6 py-4 whitespace-nowrap">{row.HsnSacCode}</td>
+                        <td className="px-6 py-4 whitespace-nowrap">{row.InvoiceNumber}</td>
                         <td className="px-6 py-4">{row.Quantity}</td>
                         <td className="px-6 py-4">{row.TaxableValue}</td>
                         <td className="px-6 py-4">{row.GstRate}</td>
@@ -112,6 +125,20 @@ const PurchaseRow = () => {
                         <td className="px-6 py-4">{row.PaymentMode}</td>
                         <td className="px-6 py-4">{row.Remark}</td>
                         <td className="px-6 py-4">{row.PaymentStatus}</td>
+                        <td className="px-6 py-4 flex items-center">
+                          <button 
+                            onClick={() => handleEdit(purchase.id)}
+                            className="bg-yellow-500 text-white py-1 px-3 rounded hover:bg-yellow-600 mr-2"
+                          >
+                            Edit
+                          </button>
+                          <button 
+                            onClick={() => handleDelete(purchase.id)}
+                            className="bg-red-500 text-white py-1 px-3 rounded hover:bg-red-600"
+                          >
+                            Delete
+                          </button>
+                        </td>
                       </tr>
                     ))}
                   </React.Fragment>

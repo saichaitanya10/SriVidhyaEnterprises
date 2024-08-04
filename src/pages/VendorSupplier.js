@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import Navibar from '../components/Navibar';
 import { useNavigate } from 'react-router-dom';
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, getDocs } from "firebase/firestore";
+import { getFirestore, collection, getDocs, deleteDoc, doc } from "firebase/firestore";
+import toast from 'react-hot-toast';
 
 // Firebase configuration
 const firebaseConfig = {
@@ -72,6 +73,22 @@ const VendorSupplier = () => {
     setSearchTerm(event.target.value);
   };
 
+  const handleEdit = (id) => {
+    navigate(`/VendorDetails/${id}`);
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      await deleteDoc(doc(db, "vendors", id));
+      setVendors(vendors.filter(vendor => vendor.id !== id));
+      setFilteredVendors(filteredVendors.filter(vendor => vendor.id !== id));
+      toast.success('Vendor deleted successfully!');
+    } catch (error) {
+      console.error("Error deleting vendor: ", error);
+      alert('Error deleting vendor. Please try again.');
+    }
+  };
+
   return (
     <div>
       <Navibar />
@@ -126,6 +143,7 @@ const VendorSupplier = () => {
                   <th scope="col" className="px-6 py-3">GST Number</th>
                   <th scope="col" className="px-6 py-3">Billing Address</th>
                   <th scope="col" className="px-6 py-3">Shipping Address</th>
+                  <th scope="col" className="px-6 py-3">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -171,6 +189,20 @@ const VendorSupplier = () => {
                         onChange={(e) => handleInputChange(index, 'shippingAddress', e.target.value)} 
                         className="w-full p-2"
                       />
+                    </td>
+                    <td className="px-6 py-4 flex gap-2">
+                      <button 
+                        onClick={() => handleEdit(vendor.id)} 
+                        className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600"
+                      >
+                        Edit
+                      </button>
+                      <button 
+                        onClick={() => handleDelete(vendor.id)} 
+                        className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                      >
+                        Delete
+                      </button>
                     </td>
                   </tr>
                 ))}
