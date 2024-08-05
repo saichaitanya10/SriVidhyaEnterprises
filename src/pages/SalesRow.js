@@ -69,19 +69,18 @@ const SalesRow = () => {
               GstRate: item.gstRate || '',
             };
             setRows(updatedRows);
-            // toast.success("Item found 🥳🥳💃💃🎈🎈🎉🎉");
             found = true;
           }
         }
       });
   
       if (!found) {
-        // toast.error('Item not found.');
+        toast.error('Item not found.');
       }
     } catch (error) {
       console.error('Error fetching item details:', error);
       setTimeout(() => {
-        // toast.error('Error fetching item details: ' + error.message);
+        toast.error('Error fetching item details: ' + error.message);
       }, 2000); // 2000 milliseconds = 2 seconds
     }
   };
@@ -109,7 +108,7 @@ const SalesRow = () => {
             ShippingAddress: data.shippingAddress || ''
           };
           setRows(updatedRows);
-          toast.success("Vendor found 🥳🥳💃💃🎈🎈🎉🎉");
+          toast.success("Vendor found.");
           found = true;
         }
       });
@@ -120,7 +119,7 @@ const SalesRow = () => {
     } catch (error) {
       console.error('Error fetching vendor details:', error);
       setTimeout(() => {
-        // toast.error('Error fetching vendor details: ' + error.message);
+        toast.error('Error fetching vendor details: ' + error.message);
       }, 2000); // 2000 milliseconds = 2 seconds
     }
   };
@@ -193,7 +192,7 @@ const SalesRow = () => {
       }]);
     } catch (error) {
       console.error("Error adding document: ", error);
-      alert('Error submitting form');
+      toast.error('Error submitting form');
     }
 
     navigate(-1);
@@ -225,13 +224,13 @@ const SalesRow = () => {
   return (
     <div>
       <Navibar />
-      <div className='p-10 w-full bg-zinc-800/40 h-screen backdrop-blur-sm'>
+      <div className='p-4 w-full bg-zinc-800/40 h-screen backdrop-blur-sm'>
         <div className="container mx-auto">
-          <div className="flex justify-between items-center mb-2">
+          <div className="flex justify-between items-center ">
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Enter Sales Details</h1>
             <button 
               onClick={() => navigate(-1)} 
-              className="bg-gray-500 text-white py-2 px-6 rounded hover:bg-gray-600"
+              className="bg-gray-500 text-white py-2 px-6 rounded hover:bg-gray-600 text-sm"
             >
               Back
             </button>
@@ -240,20 +239,38 @@ const SalesRow = () => {
             <div key={index} className="mb-4 p-4 border border-gray-300 rounded-lg bg-white">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {Object.keys(row).map((key, idx) => {
-                  if (key === 'PaymentMode') {
+                  if (key === 'GstRate') {
                     return (
                       <div key={idx} className="col-span-1">
-                        <label className="block font-medium">Mode of Payment</label>
+                        <label className="block font-medium text-sm">GST Rate</label>
                         <select 
                           value={row[key]}
                           onChange={(e) => handleInputChange(index, key, e.target.value)}
-                          className="w-full border p-2 rounded"
+                          className="w-full border p-2 rounded text-sm"
+                        >
+                          <option value="">Select GST Rate</option>
+                          <option value="5">5%</option>
+                          <option value="12">12%</option>
+                          <option value="18">18%</option>
+                          <option value="28">28%</option>
+                        </select>
+                      </div>
+                    );
+                  }
+                  if (key === 'PaymentMode') {
+                    return (
+                      <div key={idx} className="col-span-1">
+                        <label className="block font-medium text-sm">Mode of Payment</label>
+                        <select 
+                          value={row[key]}
+                          onChange={(e) => handleInputChange(index, key, e.target.value)}
+                          className="w-full border p-2 rounded text-sm"
                         >
                           <option value="">Select Payment Mode</option>
                           <option value="PhonePe/GPay/Paytm">PhonePe/GPay/Paytm</option>
+                          <option value="Netbanking">Netbanking</option>
+                          <option value="UPI">UPI</option>
                           <option value="Cash">Cash</option>
-                          <option value="Bank Transfer">Bank Transfer</option>
-                          <option value="Cheque">Cheque</option>
                         </select>
                       </div>
                     );
@@ -261,24 +278,37 @@ const SalesRow = () => {
                   if (key === 'PaymentStatus') {
                     return (
                       <div key={idx} className="col-span-1 flex items-center">
-                      <label className="block font-medium mr-2">Payment Status:</label>
-                      <button 
-                        onClick={() => togglePaymentStatus(index)} 
-                        className={`py-2 px-4 rounded ${row[key] === 'Pending' ? 'bg-yellow-500' : 'bg-green-500'} text-white`}
-                      >
-                        {row[key]}
-                      </button>
-                    </div>
+                        <label className="block font-medium mr-2 text-sm">Payment Status:</label>
+                        <button 
+                          onClick={() => togglePaymentStatus(index)} 
+                          className={`py-1 px-2 rounded ${row[key] === 'Pending' ? 'bg-yellow-500' : 'bg-green-500'} text-sm`}
+                        >
+                          {row[key]}
+                        </button>
+                      </div>
+                    );
+                  }
+                  if (key === 'Date') {
+                    return (
+                      <div key={idx} className="col-span-1">
+                        <label className="block font-medium text-sm">Date</label>
+                        <input
+                          type="date"
+                          value={row[key]}
+                          onChange={(e) => handleInputChange(index, key, e.target.value)}
+                          className="w-full border p-2 rounded text-sm"
+                        />
+                      </div>
                     );
                   }
                   return (
                     <div key={idx} className="col-span-1">
-                      <label className="block font-medium">{formatLabel(key)}</label>
+                      <label className="block font-medium text-sm">{formatLabel(key)}</label>
                       <input
                         type="text"
                         value={row[key]}
                         onChange={(e) => handleInputChange(index, key, e.target.value)}
-                        className="w-full border p-2 rounded"
+                        className="w-full border p-2 rounded text-sm"
                       />
                     </div>
                   );
@@ -293,11 +323,11 @@ const SalesRow = () => {
               onChange={handleAgreeChange}
               className="mr-2"
             />
-            <label className='text-white'>I agree to the terms and conditions</label>
+            <label className='text-white text-sm'>I agree to the terms and conditions</label>
           </div>
           <button
             onClick={handleSubmit}
-            className="bg-blue-500 text-white py-2 px-6 rounded hover:bg-blue-600"
+            className="bg-blue-500 text-white py-2 px-6 rounded hover:bg-blue-600 text-sm"
           >
             Submit
           </button>

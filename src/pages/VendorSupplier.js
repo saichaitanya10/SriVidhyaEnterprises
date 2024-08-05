@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Navibar from '../components/Navibar';
 import { useNavigate } from 'react-router-dom';
 import { initializeApp } from "firebase/app";
@@ -89,10 +89,20 @@ const VendorSupplier = () => {
     }
   };
 
+  const autoResizeTextarea = (textarea) => {
+    textarea.style.height = 'auto';
+    textarea.style.height = textarea.scrollHeight + 'px';
+  };
+
+  useEffect(() => {
+    const textareas = document.querySelectorAll('textarea');
+    textareas.forEach((textarea) => autoResizeTextarea(textarea));
+  }, [filteredVendors]);
+
   return (
     <div>
       <Navibar />
-      <div className='p-8 w-full bg-zinc-800/40 h-screen backdrop-blur-sm'>
+      <div className='p-6 w-full bg-zinc-800/40 h-screen backdrop-blur-sm'>
         <div className="container mx-auto">
           <h1 className="text-3xl font-bold text-gray-900 mb-4">Vendor Details</h1>
 
@@ -111,7 +121,7 @@ const VendorSupplier = () => {
                 <input 
                   type="search" 
                   id="default-search" 
-                  className="block w-full p-4 pl-10 text-sm text-gray-900 rounded-lg bg-white focus:ring-blue-500 focus:border-blue-500" 
+                  className="block w-full p-3 pl-10 text-sm text-gray-900 rounded-lg bg-white focus:ring-blue-500 focus:border-blue-500" 
                   placeholder="Search Party Name" 
                   value={searchTerm}
                   onChange={handleSearchChange}
@@ -119,7 +129,7 @@ const VendorSupplier = () => {
               </div>
               <button 
                 type="submit" 
-                className="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-8 mr-2 py-2"
+                className="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-6 mr-2 py-2"
               >
                 Search
               </button>
@@ -134,72 +144,74 @@ const VendorSupplier = () => {
           </div>
 
           <div className="relative overflow-x-auto shadow-md sm:rounded-lg bg-white">
-            <table className="w-full text-lg text-left rtl:text-right text-gray-500">
-              <thead className="text-xs text-gray-700 uppercase bg-gray-200">
+            <table className="w-full text-sm text-left rtl:text-right text-gray-500 border-collapse border border-gray-300">
+              <thead className="text-xs text-gray-700 uppercase bg-gray-200 border-b border-gray-300">
                 <tr>
-                  <th scope="col" className="px-4 py-3">Date</th>
-                  <th scope="col" className="px-6 py-3">Party Name</th>
-                  <th scope="col" className="px-6 py-3">Contact Number</th>
-                  <th scope="col" className="px-6 py-3">GST Number</th>
-                  <th scope="col" className="px-6 py-3">Billing Address</th>
-                  <th scope="col" className="px-6 py-3">Shipping Address</th>
-                  <th scope="col" className="px-6 py-3">Actions</th>
+                  <th scope="col" className="px-2 py-3">Date</th>
+                  <th scope="col" className="px-2 py-3">Party Name</th>
+                  <th scope="col" className="px-2 py-3">Contact Number</th>
+                  <th scope="col" className="px-2 py-3">GST Number</th>
+                  <th scope="col" className="px-2 py-3">Billing Address</th>
+                  <th scope="col" className="px-2 py-3">Shipping Address</th>
+                  <th scope="col" className="px-2 py-3">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredVendors.map((vendor, index) => (
-                  <tr key={vendor.id} className="bg-white">
-                    <td className="px-4 py-4 whitespace-nowrap">{vendor.createdAt}</td>
-                    <td className="px-6 py-4">
+                  <tr key={vendor.id} className="bg-white border-b border-gray-300">
+                    <td className="px-2 py-4 whitespace-nowrap">{vendor.createdAt}</td>
+                    <td className="px-2 py-4">
                       <input 
                         type="text" 
                         value={vendor.partyName} 
                         onChange={(e) => handleInputChange(index, 'partyName', e.target.value)} 
-                        className="w-full p-2"
+                        className="w-full p-2 text-xs overflow-x-auto"
                       />
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-2 py-4">
                       <input 
                         type="text" 
                         value={vendor.contactNumber} 
                         onChange={(e) => handleInputChange(index, 'contactNumber', e.target.value)} 
-                        className="w-full p-2"
+                        className="w-full p-2 text-xs overflow-x-auto"
                       />
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-2 py-4">
                       <input 
                         type="text" 
                         value={vendor.gstNumber} 
                         onChange={(e) => handleInputChange(index, 'gstNumber', e.target.value)} 
-                        className="w-full p-2"
+                        className="w-full p-2 text-xs overflow-x-auto"
                       />
                     </td>
-                    <td className="px-6 py-4">
-                      <input 
-                        type="text" 
+                    <td className="px-2 py-4">
+                      <textarea 
                         value={vendor.billingAddress} 
                         onChange={(e) => handleInputChange(index, 'billingAddress', e.target.value)} 
-                        className="w-full p-2"
+                        className="w-full p-2 text-xs overflow-x-auto resize-none"
+                        rows={1}
+                        onInput={(e) => autoResizeTextarea(e.target)}
                       />
                     </td>
-                    <td className="px-6 py-4">
-                      <input 
-                        type="text" 
+                    <td className="px-2 py-4">
+                      <textarea 
                         value={vendor.shippingAddress} 
                         onChange={(e) => handleInputChange(index, 'shippingAddress', e.target.value)} 
-                        className="w-full p-2"
+                        className="w-full p-2 text-xs overflow-x-auto resize-none"
+                        rows={1}
+                        onInput={(e) => autoResizeTextarea(e.target)}
                       />
                     </td>
-                    <td className="px-6 py-4 flex gap-2">
+                    <td className="px-2 py-4">
                       <button 
                         onClick={() => handleEdit(vendor.id)} 
-                        className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600"
+                        className="text-blue-600 hover:underline mr-2"
                       >
                         Edit
                       </button>
                       <button 
                         onClick={() => handleDelete(vendor.id)} 
-                        className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                        className="text-red-600 hover:underline"
                       >
                         Delete
                       </button>

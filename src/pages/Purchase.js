@@ -3,6 +3,7 @@ import Navibar from '../components/Navibar';
 import { useNavigate } from 'react-router-dom';
 import { getFirestore, collection, query, orderBy, getDocs, deleteDoc, doc } from 'firebase/firestore';
 import toast from 'react-hot-toast';
+import dayjs from 'dayjs';
 
 const PurchaseRow = () => {
   const navigate = useNavigate();
@@ -36,7 +37,7 @@ const PurchaseRow = () => {
     try {
       await deleteDoc(doc(db, 'purchase', id));
       setPurchases(purchases.filter(purchase => purchase.id !== id));
-      toast.success("Successfully deleted purchase")
+      toast.success("Successfully deleted purchase");
     } catch (error) {
       console.error('Error deleting purchase:', error);
     }
@@ -45,11 +46,11 @@ const PurchaseRow = () => {
   return (
     <div>
       <Navibar />
-      <div className='p-8 w-full bg-zinc-800/40 h-screen backdrop-blur-sm'>
+      <div className='p-6 w-full bg-zinc-800/40 h-screen backdrop-blur-sm'>
         <div className="container mx-auto">
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">Purchase Transaction History</h1>
-          
-          <div className="flex items-center justify-between mb-4 gap-4">
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">Purchase Transaction History</h1>
+
+          <div className="flex items-center justify-between mb-6 gap-4">
             <form className="flex-grow flex items-center border border-gray-300 rounded-lg bg-white shadow-md">
               <label htmlFor="default-search" className="sr-only">Search</label>
               <div className="relative flex-grow">
@@ -61,13 +62,13 @@ const PurchaseRow = () => {
                 <input 
                   type="search" 
                   id="default-search" 
-                  className="block w-full p-4 pl-10 text-sm text-gray-900 rounded-lg bg-white focus:ring-blue-500 focus:border-blue-500" 
+                  className="block w-full p-2 pl-10 text-sm text-gray-900 rounded-lg bg-white focus:ring-blue-500 focus:border-blue-500" 
                   placeholder="Search Product Name" 
                 />
               </div>
               <button 
                 type="submit" 
-                className="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-8 mr-2 py-2"
+                className="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-8 py-2"
               >
                 Search
               </button>
@@ -82,59 +83,61 @@ const PurchaseRow = () => {
           </div>
 
           <div className="relative overflow-x-auto shadow-md sm:rounded-lg bg-white">
-            <table className="w-full text-lg text-left rtl:text-right text-gray-500">
-              <thead className="text-xs text-zinc-700 uppercase bg-gray-50">
-                <tr className='bg-zinc-200'>
-                  <th scope="col" className="px-6 py-3 whitespace-nowrap">Date</th>
-                  <th scope="col" className="px-6 py-3 whitespace-nowrap">Party Name</th>
-                  <th scope="col" className="px-6 py-3">GST Number</th>
-                  <th scope="col" className="px-6 py-3">Item Name</th>
-                  <th scope="col" className="px-6 py-3">Item Description</th>
-                  <th scope="col" className="px-6 py-3 whitespace-nowrap">HSN/SAC Code</th>
-                  <th scope="col" className="px-6 py-3 whitespace-nowrap">Invoice Number</th>
-                  <th scope="col" className="px-6 py-3">Quantity</th>
-                  <th scope="col" className="px-6 py-3 whitespace-nowrap">Taxable Value</th>
-                  <th scope="col" className="px-6 py-3">GST Rate</th>
-                  <th scope="col" className="px-6 py-3">IGST</th>
-                  <th scope="col" className="px-6 py-3 ">Total Tax</th>
-                  <th scope="col" className="px-6 py-3">Final Amount</th>
-                  <th scope="col" className="px-6 py-3">Payment Mode</th>
-                  <th scope="col" className="px-6 py-3">Remark</th>
-                  <th scope="col" className="px-6 py-3">Payment Status</th>
-                  <th scope="col" className="px-6 py-3">Actions</th>
+            <table className="w-full text-sm text-left rtl:text-right text-gray-500 border-separate border-spacing-0">
+              <thead className="text-xs text-gray-700 uppercase bg-gray-50 border-b">
+                <tr className='bg-gray-200'>
+                  <th scope="col" className="px-4 py-2">Date</th>
+                  <th scope="col" className="px-4 py-2">Party Name</th>
+                  <th scope="col" className="px-4 py-2">GST Number</th>
+                  <th scope="col" className="px-4 py-2">Item Name</th>
+                  <th scope="col" className="px-4 py-2">Item Description</th>
+                  <th scope="col" className="px-4 py-2">HSN/SAC Code</th>
+                  <th scope="col" className="px-4 py-2">Invoice Number</th>
+                  <th scope="col" className="px-4 py-2">Quantity</th>
+                  <th scope="col" className="px-4 py-2">Taxable Value</th>
+                  <th scope="col" className="px-4 py-2">GST Rate</th>
+                  <th scope="col" className="px-4 py-2">IGST</th>
+                  <th scope="col" className="px-4 py-2">Total Tax</th>
+                  <th scope="col" className="px-4 py-2">Final Amount</th>
+                  <th scope="col" className="px-4 py-2">Payment Mode</th>
+                  <th scope="col" className="px-4 py-2">Remark</th>
+                  <th scope="col" className="px-4 py-2">Payment Status</th>
+                  <th scope="col" className="px-4 py-2">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {purchases.map((purchase) => (
                   <React.Fragment key={purchase.id}>
                     {purchase.purchaseDetails.map((row, idx) => (
-                      <tr key={idx} className="bg-white text-sm border-b">
-                        <td className="px-6 py-4 whitespace-nowrap">{row.Date}</td>
-                        <td className="px-6 py-4 ">{row.PartyName}</td>
-                        <td className="px-6 py-4">{row.GstNumber}</td>
-                        <td className="px-6 py-4 whitespace-nowrap">{row.ItemName}</td>
-                        <td className="px-6 py-4 whitespace-nowrap">{row.ItemDescription}</td>
-                        <td className="px-6 py-4 whitespace-nowrap">{row.HsnSacCode}</td>
-                        <td className="px-6 py-4 whitespace-nowrap">{row.InvoiceNumber}</td>
-                        <td className="px-6 py-4">{row.Quantity}</td>
-                        <td className="px-6 py-4">{row.TaxableValue}</td>
-                        <td className="px-6 py-4">{row.GstRate}</td>
-                        <td className="px-6 py-4">{row.IGST}</td>
-                        <td className="px-6 py-4">{row.TotalTax}</td>
-                        <td className="px-6 py-4">{row.FinalAmount}</td>
-                        <td className="px-6 py-4">{row.PaymentMode}</td>
-                        <td className="px-6 py-4">{row.Remark}</td>
-                        <td className="px-6 py-4">{row.PaymentStatus}</td>
-                        <td className="px-6 py-4 flex items-center">
+                      <tr key={idx} className="bg-white text-sm border-b border-gray-300">
+                        <td className="px-4 py-2">{dayjs(row.Date).format('D/M/YYYY')}</td>
+                        <td className="px-4 py-2">{row.PartyName}</td>
+                        <td className="px-4 py-2">{row.GstNumber}</td>
+                        <td className="px-4 py-2">{row.ItemName}</td>
+                        <td className="px-4 py-2">{row.ItemDescription}</td>
+                        <td className="px-4 py-2">{row.HsnSacCode}</td>
+                        <td className="px-4 py-2">{row.InvoiceNumber}</td>
+                        <td className="px-4 py-2">{row.Quantity}</td>
+                        <td className="px-4 py-2">{row.TaxableValue}</td>
+                        <td className="px-4 py-2">{row.GstRate}</td>
+                        <td className="px-4 py-2">{row.IGST}</td>
+                        <td className="px-4 py-2">{row.TotalTax}</td>
+                        <td className="px-4 py-2">{row.FinalAmount}</td>
+                        <td className="px-4 py-2">{row.PaymentMode}</td>
+                        <td className="px-4 py-2">{row.Remark}</td>
+                        <td className={`px-4 py-2 ${row.PaymentStatus === 'Pending' ? 'text-yellow-600' : 'text-green-600'}`}>
+                          {row.PaymentStatus}
+                        </td>
+                        <td className="px-4 py-2">
                           <button 
-                            onClick={() => handleEdit(purchase.id)}
-                            className="bg-yellow-500 text-white py-1 px-3 rounded hover:bg-yellow-600 mr-2"
+                            onClick={() => handleEdit(purchase.id)} 
+                            className="text-blue-600 hover:underline mr-2 text-xs"
                           >
                             Edit
                           </button>
                           <button 
-                            onClick={() => handleDelete(purchase.id)}
-                            className="bg-red-500 text-white py-1 px-3 rounded hover:bg-red-600"
+                            onClick={() => handleDelete(purchase.id)} 
+                            className="text-red-600 hover:underline text-xs"
                           >
                             Delete
                           </button>

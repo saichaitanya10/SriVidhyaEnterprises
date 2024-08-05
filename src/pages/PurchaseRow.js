@@ -33,6 +33,8 @@ const AddRow = () => {
     TaxableValue: '',
     GstRate: '',
     IGST: '',
+    CGST: '', 
+    SGST: '',
     TotalTax: '',
     FinalAmount: '',
     PaymentMode: '',
@@ -68,7 +70,7 @@ const AddRow = () => {
               GstRate: item.gstRate || '',
             };
             setRows(updatedRows);
-            toast.success("Item found 🥳🥳💃💃🎈🎈🎉🎉");
+            toast.success("Item found.");
             found = true;
           }
         }
@@ -108,7 +110,7 @@ const AddRow = () => {
             ShippingAddress: data.shippingAddress || ''
           };
           setRows(updatedRows);
-          toast.success("Vendor found 🥳🥳💃💃🎈🎈🎉🎉");
+          toast.success("Vendor found.");
           found = true;
         }
       });
@@ -128,28 +130,32 @@ const AddRow = () => {
     const newRows = rows.map((row, i) => {
       if (i === index) {
         row[field] = value;
-
+  
         if (field === 'ItemName') {
           fetchItemDetails(value, index);
         }
-
-        if(field === 'PartyName') {
+  
+        if (field === 'PartyName') {
           fetchPartyDetails(value, index);
         }
   
+        // Calculate CGST, SGST, IGST, Total Tax, and Final Amount based on the GST Rate and Taxable Value
         if (field === 'GstRate' || field === 'TaxableValue') {
           const gstRate = parseFloat(row.GstRate) || 0;
           const taxableValue = parseFloat(row.TaxableValue) || 0;
   
-          row.IGST = gstRate && !row.IGST ? (gstRate / 100 * taxableValue).toFixed(2) : row.IGST;
-          row.TotalTax = gstRate ? (parseFloat(row.CGST) + parseFloat(row.SGST) + parseFloat(row.IGST)).toFixed(2) : row.TotalTax;
-          row.FinalAmount = taxableValue ? (taxableValue + parseFloat(row.TotalTax)).toFixed(2) : row.FinalAmount;
+          row.CGST = ((gstRate / 2) / 100 * taxableValue).toFixed(2);
+          row.SGST = ((gstRate / 2) / 100 * taxableValue).toFixed(2);
+          row.IGST = (gstRate / 100 * taxableValue).toFixed(2);
+          row.TotalTax = (parseFloat(row.CGST) + parseFloat(row.SGST) + parseFloat(row.IGST)).toFixed(2);
+          row.FinalAmount = (taxableValue + parseFloat(row.TotalTax)).toFixed(2);
         }
       }
       return row;
     });
     setRows(newRows);
   };
+  
 
   const handleAgreeChange = () => {
     setIsAgreed(!isAgreed);
@@ -180,6 +186,8 @@ const AddRow = () => {
         HsnSacCode: '',
         GstRate: '',
         IGST: '',
+        CGST: '', 
+        SGST: '', 
         TotalTax: '',
         FinalAmount: '',
         PaymentMode: '',
@@ -220,10 +228,10 @@ const AddRow = () => {
   return (
     <div>
       <Navibar />
-      <div className='p-10 w-full bg-zinc-800/40 h-screen backdrop-blur-sm'>
+      <div className='p-5 w-full bg-zinc-800/40 h-screen backdrop-blur-sm'>
         <div className="container mx-auto">
           <div className="flex justify-between items-center mb-2">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Enter Purchase Details</h1>
+            <h1 className="text-2xl font-bold text-gray-900 mb-2">Enter Purchase Details</h1>
             <button 
               onClick={() => navigate(-1)} 
               className="bg-gray-500 text-white py-2 px-6 rounded hover:bg-gray-600"
@@ -233,12 +241,12 @@ const AddRow = () => {
           </div>
           {rows.map((row, index) => (
             <div key={index} className="mb-4 p-4 border border-gray-300 rounded-lg bg-white">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-xs"> {/* Reduced font size */}
                 {Object.keys(row).map((key, idx) => {
                   if (key === 'PaymentMode') {
                     return (
                       <div key={idx} className="col-span-1">
-                        <label className="block font-medium">Mode of Payment</label>
+                        <label className="block font-medium text-sm">Mode of Payment</label> {/* Adjusted label size */}
                         <select 
                           value={row[key]}
                           onChange={(e) => handleInputChange(index, key, e.target.value)}
@@ -255,7 +263,7 @@ const AddRow = () => {
                   } else if (key === 'Remark') {
                     return (
                       <div key={idx} className="col-span-1">
-                        <label className="block font-medium">Remark</label>
+                        <label className="block font-medium text-sm">Remark</label> {/* Adjusted label size */}
                         <input 
                           type="text" 
                           value={row[key]} 
@@ -267,19 +275,19 @@ const AddRow = () => {
                   } else if (key === 'PaymentStatus') {
                     return (
                       <div key={idx} className="col-span-1 flex items-center">
-                        <label className="block font-medium mr-2">Payment Status:</label>
+                        <label className="block font-medium text-sm mr-2">Payment Status:</label> {/* Adjusted label size */}
                         <button 
                           onClick={() => togglePaymentStatus(index)} 
-                          className={`py-2 px-4 rounded ${row[key] === 'Pending' ? 'bg-yellow-500' : 'bg-green-500'} text-white`}
+                          className={`py-2 px-4 rounded ${row[key] === 'Pending' ? 'bg-yellow-500' : 'bg-green-500'} text-white text-xs`} // Reduced font size
                         >
                           {row[key]}
                         </button>
                       </div>
                     );
-                  } else if (key === 'GstRate' || key === 'IGST') {
+                  } else if (key === 'GstRate') {
                     return (
                       <div key={idx} className="col-span-1">
-                        <label className="block font-medium">{formatLabel(key)}</label>
+                        <label className="block font-medium text-sm">{formatLabel(key)}</label> {/* Adjusted label size */}
                         <select 
                           value={row[key]}
                           onChange={(e) => handleInputChange(index, key, e.target.value)}
@@ -293,15 +301,39 @@ const AddRow = () => {
                         </select>
                       </div>
                     );
+                  } else if (key === 'IGST') {
+                    return (
+                      <div key={idx} className="col-span-1">
+                        <label className="block font-medium text-sm">{formatLabel(key)}</label> {/* Adjusted label size */}
+                        <input 
+                          type="number" 
+                          value={row[key]} 
+                          onChange={(e) => handleInputChange(index, key, e.target.value)}
+                          className="w-full border p-2 rounded text-xs" // Reduced font size
+                        />
+                      </div>
+                    );
+                  } else if (key === 'CGST' || key === 'SGST') { // Adding CGST and SGST fields after IGST
+                    return (
+                      <div key={idx} className="col-span-1">
+                        <label className="block font-medium text-sm">{formatLabel(key)}</label> {/* Adjusted label size */}
+                        <input 
+                          type="number" 
+                          value={row[key]} 
+                          onChange={(e) => handleInputChange(index, key, e.target.value)}
+                          className="w-full border p-2 rounded text-xs" // Reduced font size
+                        />
+                      </div>
+                    );
                   } else {
                     return (
                       <div key={idx} className="col-span-1">
-                        <label className="block font-medium">{formatLabel(key)}</label>
+                        <label className="block font-medium text-sm">{formatLabel(key)}</label> {/* Adjusted label size */}
                         <input 
-                          type={key === 'Quantity' || key === 'GstRate' || key === 'TaxableValue' ? 'number' : key === 'Date' ? 'date' : 'text'}
+                          type={key === 'Quantity' || key === 'TaxableValue' ? 'number' : key === 'Date' ? 'date' : 'text'}
                           value={row[key]} 
                           onChange={(e) => handleInputChange(index, key, e.target.value)}
-                          className="w-full border p-2 rounded"
+                          className="w-full border p-2 rounded text-xs" // Reduced font size
                         />
                       </div>
                     );
@@ -317,11 +349,11 @@ const AddRow = () => {
               onChange={handleAgreeChange} 
               className="mr-2" 
             />
-            <label className="block font-medium text-white">I agree with the terms and conditions</label>
+            <label className="block font-medium text-white text-sm">I agree with the terms and conditions</label> {/* Adjusted label size */}
           </div>
           <button 
             onClick={handleSubmit} 
-            className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
+            className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 text-xs"
           >
             Submit
           </button>
@@ -331,4 +363,4 @@ const AddRow = () => {
   );
 };
 
-export default AddRow;  
+export default AddRow;
