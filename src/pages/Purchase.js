@@ -46,11 +46,11 @@ const PurchaseRow = () => {
   return (
     <div>
       <Navibar />
-      <div className='p-6 w-full bg-zinc-800/40 h-screen backdrop-blur-sm'>
+      <div className='p-4 sm:p-6 w-full bg-zinc-800/40 min-h-screen backdrop-blur-sm'>
         <div className="container mx-auto">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Purchase Transaction History</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">Purchase Transaction History</h1>
 
-          <div className="flex items-center justify-between mb-6 gap-4">
+          <div className="flex flex-col sm:flex-row items-center justify-between mb-6 gap-4">
             <form className="flex-grow flex items-center border border-gray-300 rounded-lg bg-white shadow-md">
               <label htmlFor="default-search" className="sr-only">Search</label>
               <div className="relative flex-grow">
@@ -83,52 +83,52 @@ const PurchaseRow = () => {
           </div>
 
           <div className="relative overflow-x-auto shadow-md sm:rounded-lg bg-white">
-            <table className="w-full text-sm text-left rtl:text-right text-gray-500 border-separate border-spacing-0">
+            <table className="w-full text-xs sm:text-sm text-left rtl:text-right text-gray-500 border-separate border-spacing-0">
               <thead className="text-xs text-gray-700 uppercase bg-gray-50 border-b">
                 <tr className='bg-gray-200'>
-                  <th scope="col" className="px-4 py-2">Date</th>
-                  <th scope="col" className="px-4 py-2">Party Name</th>
-                  <th scope="col" className="px-4 py-2">GST Number</th>
-                  <th scope="col" className="px-4 py-2">Item Name</th>
-                  <th scope="col" className="px-4 py-2">Item Description</th>
-                  <th scope="col" className="px-4 py-2">HSN/SAC Code</th>
-                  <th scope="col" className="px-4 py-2">Invoice Number</th>
-                  <th scope="col" className="px-4 py-2">Quantity</th>
-                  <th scope="col" className="px-4 py-2">Taxable Value</th>
-                  <th scope="col" className="px-4 py-2">GST Rate</th>
-                  <th scope="col" className="px-4 py-2">IGST</th>
-                  <th scope="col" className="px-4 py-2">Total Tax</th>
-                  <th scope="col" className="px-4 py-2">Final Amount</th>
-                  <th scope="col" className="px-4 py-2">Payment Mode</th>
-                  <th scope="col" className="px-4 py-2">Remark</th>
-                  <th scope="col" className="px-4 py-2">Payment Status</th>
-                  <th scope="col" className="px-4 py-2">Actions</th>
+                  <th className="px-2 py-2 w-12">Date</th>
+                  <th className="px-2 py-2 w-20">Party Name</th>
+                  <th className="px-2 py-2 w-20">GST Number</th>
+                  <th className="px-2 py-2 w-20">Item Name</th>
+                  <th className="px-2 py-2 w-32">Item Description</th>
+                  <th className="px-2 py-2 w-20">HSN/SAC Code</th>
+                  <th className="px-2 py-2 w-20">Invoice Number</th>
+                  <th className="px-2 py-2 w-16">Quantity</th>
+                  <th className="px-2 py-2 w-24">Taxable Value</th>
+                  <th className="px-2 py-2 w-16">GST Rate</th>
+                  <th className="px-2 py-2 w-16">IGST</th>
+                  <th className="px-2 py-2 w-24">Total Tax</th>
+                  <th className="px-2 py-2 w-24">Final Amount</th>
+                  <th className="px-2 py-2 w-24">Payment Mode</th>
+                  <th className="px-2 py-2 w-24">Remark</th>
+                  <th className="px-2 py-2 w-24">Payment Status</th>
+                  <th className="px-2 py-2 w-24">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {purchases.map((purchase) => (
                   <React.Fragment key={purchase.id}>
                     {purchase.purchaseDetails.map((row, idx) => (
-                      <tr key={idx} className="bg-white text-sm border-b border-gray-300">
-                        <td className="px-4 py-2">{dayjs(row.Date).format('D/M/YYYY')}</td>
-                        <td className="px-4 py-2">{row.PartyName}</td>
-                        <td className="px-4 py-2">{row.GstNumber}</td>
-                        <td className="px-4 py-2">{row.ItemName}</td>
-                        <td className="px-4 py-2">{row.ItemDescription}</td>
-                        <td className="px-4 py-2">{row.HsnSacCode}</td>
-                        <td className="px-4 py-2">{row.InvoiceNumber}</td>
-                        <td className="px-4 py-2">{row.Quantity}</td>
-                        <td className="px-4 py-2">{row.TaxableValue}</td>
-                        <td className="px-4 py-2">{row.GstRate}</td>
-                        <td className="px-4 py-2">{row.IGST}</td>
-                        <td className="px-4 py-2">{row.TotalTax}</td>
-                        <td className="px-4 py-2">{row.FinalAmount}</td>
-                        <td className="px-4 py-2">{row.PaymentMode}</td>
-                        <td className="px-4 py-2">{row.Remark}</td>
-                        <td className={`px-4 py-2 ${row.PaymentStatus === 'Pending' ? 'text-yellow-600' : 'text-green-600'}`}>
+                      <tr key={idx} className="bg-white text-xs sm:text-sm border-b border-gray-300">
+                        <td className="px-2 py-2">{dayjs(row.Date).format('D/M/YYYY')}</td>
+                        <td className="px-2 py-2">{row.PartyName}</td>
+                        <td className="px-2 py-2">{row.GstNumber}</td>
+                        <td className="px-2 py-2">{row.ItemName}</td>
+                        <td className="px-2 py-2">{row.ItemDescription}</td>
+                        <td className="px-2 py-2">{row.HsnSacCode}</td>
+                        <td className="px-2 py-2">{row.InvoiceNumber}</td>
+                        <td className="px-2 py-2">{row.Quantity}</td>
+                        <td className="px-2 py-2">{row.TaxableValue}</td>
+                        <td className="px-2 py-2">{row.GstRate}</td>
+                        <td className="px-2 py-2">{row.IGST}</td>
+                        <td className="px-2 py-2">{row.TotalTax}</td>
+                        <td className="px-2 py-2">{row.FinalAmount}</td>
+                        <td className="px-2 py-2">{row.PaymentMode}</td>
+                        <td className="px-2 py-2">{row.Remark}</td>
+                        <td className={`px-2 py-2 ${row.PaymentStatus === 'Pending' ? 'text-yellow-600' : 'text-green-600'}`}>
                           {row.PaymentStatus}
                         </td>
-                        <td className="px-4 py-2">
+                        <td className="px-2 py-2">
                           <button 
                             onClick={() => handleEdit(purchase.id)} 
                             className="text-blue-600 hover:underline mr-2 text-xs"

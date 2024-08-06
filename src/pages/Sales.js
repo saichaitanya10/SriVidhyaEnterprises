@@ -47,16 +47,16 @@ const Sales = () => {
 
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this item?')) {
-    try {
-      await deleteDoc(doc(db, 'sales', id));
-      toast.success('Document deleted successfully!');
-      setSalesData(salesData.filter(sale => sale.id !== id)); // Remove deleted document from state
-    } catch (error) {
-      console.error("Error deleting document: ", error);
-      toast.error('Error deleting document.');
+      try {
+        await deleteDoc(doc(db, 'sales', id));
+        toast.success('Document deleted successfully!');
+        setSalesData(salesData.filter(sale => sale.id !== id)); // Remove deleted document from state
+      } catch (error) {
+        console.error("Error deleting document: ", error);
+        toast.error('Error deleting document.');
+      }
     }
-  }
-};
+  };
 
   const handleAddRow = () => {
     navigate('/add-salesrow');
@@ -105,62 +105,62 @@ const Sales = () => {
             <table className="w-full text-sm text-left rtl:text-right text-gray-500">
               <thead className="text-xs text-gray-700 uppercase bg-gray-200">
                 <tr>
-                  <th scope="col" className="px-6 py-3">Date</th>
-                  <th scope="col" className="px-6 py-3">Product Name</th>
-                  <th scope="col" className="px-6 py-3">Description</th>
-                  <th scope="col" className="px-6 py-3">HSN/SAC Code</th>
-                  <th scope="col" className="px-6 py-3">GST Number</th>
-                  <th scope="col" className="px-6 py-3">Invoice Number</th>
-                  <th scope="col" className="px-6 py-3">Quantity</th>
-                  <th scope="col" className="px-6 py-3">Taxable Value</th>
-                  <th scope="col" className="px-6 py-3">GST Rate</th>
-                  <th scope="col" className="px-6 py-3">CGST</th>
-                  <th scope="col" className="px-6 py-3">SGST</th>
-                  <th scope="col" className="px-6 py-3">IGST</th>
-                  <th scope="col" className="px-6 py-3">Total Tax</th>
-                  <th scope="col" className="px-6 py-3">Final Amount</th>
-                  <th scope="col" className="px-6 py-3">Payment Mode</th>
-                  <th scope="col" className="px-6 py-3">Remark</th>
-                  <th scope="col" className="px-6 py-3">Payment Status</th>
-                  <th scope="col" className="px-6 py-3">Actions</th> {/* Added Actions Column */}
+                  <th scope="col" className="px-2 py-3 w-20">Date</th>
+                  <th scope="col" className="px-2 py-3 w-24">Product Name</th>
+                  <th scope="col" className="px-2 py-3 w-40">Description</th>
+                  <th scope="col" className="px-2 py-3 w-24">HSN/SAC Code</th>
+                  <th scope="col" className="px-2 py-3 w-24">GST Number</th>
+                  <th scope="col" className="px-2 py-3 w-24">Invoice Number</th>
+                  <th scope="col" className="px-2 py-3 w-16">Quantity</th>
+                  <th scope="col" className="px-2 py-3 w-24">Taxable Value</th>
+                  <th scope="col" className="px-2 py-3 w-16">GST Rate</th>
+                  <th scope="col" className="px-2 py-3 w-16">CGST</th>
+                  <th scope="col" className="px-2 py-3 w-16">SGST</th>
+                  <th scope="col" className="px-2 py-3 w-16">IGST</th>
+                  <th scope="col" className="px-2 py-3 w-24">Total Tax</th>
+                  <th scope="col" className="px-2 py-3 w-24">Final Amount</th>
+                  <th scope="col" className="px-2 py-3 w-24">Payment Mode</th>
+                  <th scope="col" className="px-2 py-3 w-32">Remark</th>
+                  <th scope="col" className="px-2 py-3 w-24">Payment Status</th>
+                  <th scope="col" className="px-2 py-3 w-24">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {salesData.map((sale) => (
                   <tr key={sale.id} className="bg-white border-b">
-                    <td className="px-6 py-4">{new Date(sale.createdAt.seconds * 1000).toLocaleDateString()}</td>
-                    <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">{sale.salesDetails[0].ItemName}</td>
-                    <td className="px-6 py-4">{sale.salesDetails[0].ItemDescription}</td>
-                    <td className="px-6 py-4">{sale.salesDetails[0].HsnSacCode}</td>
-                    <td className="px-6 py-4">{sale.salesDetails[0].GstNumber}</td>
-                    <td className="px-6 py-4">{sale.salesDetails[0].InvoiceNumber}</td>
-                    <td className="px-6 py-4">{sale.salesDetails[0].Quantity}</td>
-                    <td className="px-6 py-4">{sale.salesDetails[0].TaxableValue}</td>
-                    <td className="px-6 py-4">{sale.salesDetails[0].GstRate}</td>
-                    <td className="px-6 py-4">{sale.salesDetails[0].CGST}</td>
-                    <td className="px-6 py-4">{sale.salesDetails[0].SGST}</td>
-                    <td className="px-6 py-4">{sale.salesDetails[0].IGST}</td>
-                    <td className="px-6 py-4">{sale.salesDetails[0].TotalTax}</td>
-                    <td className="px-6 py-4">{sale.salesDetails[0].FinalAmount}</td>
-                    <td className="px-6 py-4">{sale.salesDetails[0].PaymentMode}</td>
-                    <td className="px-6 py-4">{sale.salesDetails[0].Remark}</td>
-                    <td className={`px-6 py-4 ${sale.salesDetails[0].PaymentStatus === 'Successful' ? 'text-green-600' : sale.salesDetails[0].PaymentStatus === 'Pending' ? 'text-yellow-600' : ''}`}>
+                    <td className="px-2 py-4 text-xs">{new Date(sale.createdAt.seconds * 1000).toLocaleDateString()}</td>
+                    <td className="px-2 py-4 text-xs font-medium text-gray-900">{sale.salesDetails[0].ItemName}</td>
+                    <td className="px-2 py-4 text-xs">{sale.salesDetails[0].ItemDescription}</td>
+                    <td className="px-2 py-4 text-xs">{sale.salesDetails[0].HsnSacCode}</td>
+                    <td className="px-2 py-4 text-xs">{sale.salesDetails[0].GstNumber}</td>
+                    <td className="px-2 py-4 text-xs">{sale.salesDetails[0].InvoiceNumber}</td>
+                    <td className="px-2 py-4 text-xs">{sale.salesDetails[0].Quantity}</td>
+                    <td className="px-2 py-4 text-xs">{sale.salesDetails[0].TaxableValue}</td>
+                    <td className="px-2 py-4 text-xs">{sale.salesDetails[0].GstRate}</td>
+                    <td className="px-2 py-4 text-xs">{sale.salesDetails[0].CGST}</td>
+                    <td className="px-2 py-4 text-xs">{sale.salesDetails[0].SGST}</td>
+                    <td className="px-2 py-4 text-xs">{sale.salesDetails[0].IGST}</td>
+                    <td className="px-2 py-4 text-xs">{sale.salesDetails[0].TotalTax}</td>
+                    <td className="px-2 py-4 text-xs">{sale.salesDetails[0].FinalAmount}</td>
+                    <td className="px-2 py-4 text-xs">{sale.salesDetails[0].PaymentMode}</td>
+                    <td className="px-2 py-4 text-xs">{sale.salesDetails[0].Remark}</td>
+                    <td className={`px-2 py-4 text-xs ${sale.salesDetails[0].PaymentStatus === 'Successful' ? 'text-green-600' : sale.salesDetails[0].PaymentStatus === 'Pending' ? 'text-yellow-600' : ''}`}>
                       {sale.salesDetails[0].PaymentStatus}
                     </td>
-                    <td className="px-6 py-4">
-                        <button 
-                          onClick={() => handleEdit(sale.id)} 
-                          className="text-blue-600 hover:underline mr-2"
-                        >
-                          Edit
-                        </button>
-                        <button 
-                          onClick={() => handleDelete(sale.id)} 
-                          className="text-red-600 hover:underline"
-                        >
-                          Delete
-                        </button>
-                      </td>
+                    <td className="px-2 py-4 text-xs">
+                      <button 
+                        onClick={() => handleEdit(sale.id)} 
+                        className="text-blue-600 hover:underline mr-2"
+                      >
+                        Edit
+                      </button>
+                      <button 
+                        onClick={() => handleDelete(sale.id)} 
+                        className="text-red-600 hover:underline"
+                      >
+                        Delete
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
