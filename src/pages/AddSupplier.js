@@ -27,6 +27,7 @@ const AddSupplier = () => {
     partyName: '',
     contactNumber: '+91',
     gstNumber: '',
+    address: ''
   });
   const [isAgreed, setIsAgreed] = useState(false);
 
@@ -42,10 +43,9 @@ const AddSupplier = () => {
             console.log("No such document!");
           }
         } else {
-          // Fetch and increment serial number for a new supplier
           const serialDocRef = doc(db, "serialNumbers", "latest");
           const serialDocSnap = await getDoc(serialDocRef);
-          let newSerialNo = 1; // Default serial number
+          let newSerialNo = 1;
 
           if (serialDocSnap.exists()) {
             const currentSerial = serialDocSnap.data().latestSerialNo;
@@ -82,7 +82,6 @@ const AddSupplier = () => {
 
     try {
       if (id) {
-        // Update existing supplier
         const docRef = doc(db, "suppliers", id);
         await updateDoc(docRef, {
           ...supplier,
@@ -90,7 +89,6 @@ const AddSupplier = () => {
         });
         alert('Supplier updated successfully!');
       } else {
-        // Add new supplier
         const collectionRef = collection(db, "suppliers");
         await addDoc(collectionRef, {
           ...supplier,
@@ -156,6 +154,15 @@ const AddSupplier = () => {
                   type="text"
                   value={supplier.gstNumber}
                   onChange={(e) => handleInputChange('gstNumber', e.target.value)}
+                  className="w-full border p-2 rounded"
+                />
+              </div>
+              <div className="col-span-1">
+                <label className="block font-medium">Address</label>
+                <input
+                  type="text"
+                  value={supplier.address}
+                  onChange={(e) => handleInputChange('address', e.target.value)}
                   className="w-full border p-2 rounded"
                 />
               </div>

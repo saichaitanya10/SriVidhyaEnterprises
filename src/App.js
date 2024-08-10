@@ -41,6 +41,7 @@ function App() {
       <Route path="/VendorDetails" element={<VendorDetails />} />
       <Route path="/VendorDetails/:id" element={<VendorDetails />} />
       <Route path="/SupplierDetails" element={<SupplierDetails />} />
+      <Route path="/AddSupplier/:id" element={<AddSupplier />} />
       <Route path="/AddSupplier" element={<AddSupplier />} />
       
      </Routes>

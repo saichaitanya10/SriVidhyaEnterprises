@@ -122,8 +122,8 @@ const ItemEntry = () => {
           </div>
 
           {/* Table */}
-          <div className="relative overflow-x-auto shadow-md sm:rounded-lg bg-white mb-4" style={{ maxHeight: '500px', overflowY: 'auto' }}>
-            <table className="w-full text-sm text-left rtl:text-right text-gray-500">
+          <div className="relative overflow-x-auto shadow-md sm:rounded-lg bg-white mb-4 no-scrollbar" style={{ maxHeight: '500px', overflowY: 'auto' }}>
+            <table className="w-full text-sm text-left rtl:text-right text-gray-500 no-scrollbar">
               <thead className="text-xs text-gray-700 uppercase bg-gray-200">
                 <tr>
                   <th scope="col" className="px-6 py-3">S.No</th>

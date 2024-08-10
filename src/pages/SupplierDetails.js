@@ -68,6 +68,7 @@ const SupplierDetails = () => {
   };
 
   const handleDelete = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this supplier?')) return;
     try {
       await deleteDoc(doc(db, "suppliers", id));
       setSuppliers(suppliers.filter(supplier => supplier.id !== id));
@@ -139,6 +140,7 @@ const SupplierDetails = () => {
                   <th scope="col" className="px-4 py-2">Party Name</th>
                   <th scope="col" className="px-4 py-2">Contact Number</th>
                   <th scope="col" className="px-4 py-2">GST Number</th>
+                  <th scope="col" className="px-4 py-2">Address</th>
                   <th scope="col" className="px-4 py-2">Actions</th>
                 </tr>
               </thead>
@@ -149,6 +151,7 @@ const SupplierDetails = () => {
                     <td className="px-4 py-4">{supplier.partyName}</td>
                     <td className="px-4 py-4">{supplier.contactNumber}</td>
                     <td className="px-4 py-4">{supplier.gstNumber}</td>
+                    <td className="px-4 py-4">{supplier.address}</td>
                     <td className="px-4 py-4">
                       <button 
                         onClick={() => handleEdit(supplier.id)} 

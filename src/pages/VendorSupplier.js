@@ -78,6 +78,7 @@ const VendorSupplier = () => {
   };
 
   const handleDelete = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this vendor?')) return;
     try {
       await deleteDoc(doc(db, "vendors", id));
       setVendors(vendors.filter(vendor => vendor.id !== id));
