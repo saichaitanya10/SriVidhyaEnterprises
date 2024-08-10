@@ -35,7 +35,7 @@ const MainContent = () => {
           <img className='w-4/5 mt-6 h-auto' src={ItemEntry} />
         </a>
 
-        <a href='/VendorSupplier' className='w-1/6 bg-white p-4 rounded-lg flex flex-col items-center'>
+        <a href='/VendorSupplierSelection' className='w-1/6 bg-white p-4 rounded-lg flex flex-col items-center'>
           <h1 className='text-xl font-semibold mb-3'>Vendor/Supplier Data</h1>
           <img className='w-4/5 h-auto' src={Vendor} />
         </a>

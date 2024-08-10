@@ -5,6 +5,8 @@ import ItemEntry from "./pages/ItemEntry";
 import ItemRow from "./pages/ItemRow";
 import VendorSupplier from "./pages/VendorSupplier";
 import VendorDetails from "./pages/VendorDetails";
+import SupplierDetails from "./pages/SupplierDetails";
+import VendorSupplierSelection from "./pages/VendorSupplierSelection";
 import Sales from "./pages/Sales";
 import Purchase from "./pages/Purchase";
 import InvoiceGenerator from "./pages/InvoiceGenerator";
@@ -13,7 +15,7 @@ import PurchaseRow from "./pages/PurchaseRow";
 import { Toaster } from "react-hot-toast";
 import EditSalesRow from "./pages/EditSalesRow";
 import EditPurchaseRow from "./pages/EditPurchaseRow";
-
+import AddSupplier from "./pages/AddSupplier";
 
 
 function App() {
@@ -25,6 +27,7 @@ function App() {
      <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/ItemEntry" element={<ItemEntry />} />
+      <Route path="/VendorSupplierSelection" element={<VendorSupplierSelection />} />
       <Route path="/VendorSupplier" element={<VendorSupplier />} />
       <Route path="/sales" element={<Sales />} />
       <Route path="/purchase" element={<Purchase />} />
@@ -37,6 +40,9 @@ function App() {
       <Route path="/ItemRow/:id" element={<ItemRow />} />
       <Route path="/VendorDetails" element={<VendorDetails />} />
       <Route path="/VendorDetails/:id" element={<VendorDetails />} />
+      <Route path="/SupplierDetails" element={<SupplierDetails />} />
+      <Route path="/AddSupplier" element={<AddSupplier />} />
+      
      </Routes>
      <Toaster/>
     </div>

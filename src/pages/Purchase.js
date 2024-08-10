@@ -34,6 +34,7 @@ const PurchaseRow = () => {
   };
 
   const handleDelete = async (id) => {
+    if (window.confirm('Are you sure you want to delete this item?')) {
     try {
       await deleteDoc(doc(db, 'purchase', id));
       setPurchases(purchases.filter(purchase => purchase.id !== id));
@@ -41,7 +42,8 @@ const PurchaseRow = () => {
     } catch (error) {
       console.error('Error deleting purchase:', error);
     }
-  };
+  }
+};
 
   return (
     <div>

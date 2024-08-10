@@ -78,7 +78,7 @@ const Navibar = () => {
                 <a href="/" className="block py-2 px-5 hover:text-white text-gray-900 rounded-lg hover:bg-gray-100 md:hover:bg-transparent md:hover:bg-zinc-700">Home</a>
               </li>
               <li>
-                <a href="#" className="block py-2 px-5 hover:text-white text-gray-900 rounded-lg hover:bg-gray-100 md:hover:bg-transparent md:hover:bg-zinc-700">Products</a>
+                <a href="#" className="block py-2 px-5 hover:text-white text-gray-900 rounded-lg hover:bg-gray-100 md:hover:bg-transparent md:hover:bg-zinc-700">Services</a>
               </li>
               <li>
                 <a href="#" className="block py-2 px-5 hover:text-white text-gray-900 rounded-lg hover:bg-gray-100 md:hover:bg-transparent md:hover:bg-zinc-700">Invoice</a>

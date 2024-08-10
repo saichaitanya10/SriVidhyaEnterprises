@@ -104,7 +104,16 @@ const VendorSupplier = () => {
       <Navibar />
       <div className='p-6 w-full bg-zinc-800/40 h-screen backdrop-blur-sm'>
         <div className="container mx-auto">
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">Vendor Details</h1>
+          <div className="relative mb-4">
+          <button 
+              onClick={() => navigate('/VendorSupplierSelection')} 
+              className="absolute right-4 bg-gray-500 text-white py-2 px-6 rounded hover:bg-gray-600"
+            >
+              Back
+            </button>
+          <h1 className="text-3xl font-bold text-gray-900 mb-4">Vendor Data Entry</h1>
+          </div>
+          
 
           <div className="flex items-center justify-between mb-4 gap-4">
             <form 
