@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Navibar from '../components/Navibar';
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, addDoc, updateDoc, doc, getDoc, setDoc } from "firebase/firestore";
+import { toast } from 'react-hot-toast';
+import { getFirestore, collection, addDoc, updateDoc, doc, getDoc, setDoc,getDocs } from "firebase/firestore";
 
 // Firebase configuration
 const firebaseConfig = {
@@ -38,32 +39,31 @@ const AddSupplier = () => {
           const supplierDoc = doc(db, "suppliers", id);
           const supplierSnap = await getDoc(supplierDoc);
           if (supplierSnap.exists()) {
-            setSupplier({ ...supplierSnap.data(), serialNo: id });
+            setSupplier({ ...supplierSnap.data()});
           } else {
             console.log("No such document!");
           }
         } else {
-          const serialDocRef = doc(db, "serialNumbers", "latest");
-          const serialDocSnap = await getDoc(serialDocRef);
-          let newSerialNo = 1;
-
-          if (serialDocSnap.exists()) {
-            const currentSerial = serialDocSnap.data().latestSerialNo;
-            newSerialNo = currentSerial + 1;
-            await updateDoc(serialDocRef, { latestSerialNo: newSerialNo });
-          } else {
-            await setDoc(serialDocRef, { latestSerialNo: newSerialNo });
-          }
-
+          // Fetch the count of suppliers to generate the new serial number
+          const suppliersCollectionRef = collection(db, "suppliers");
+          const suppliersSnapshot = await getDocs(suppliersCollectionRef);
+          const count = suppliersSnapshot.size;
+  
+          // Generate the new serial number
+          const newSerialNo = count + 1;
+  
+          // Update the state of the supplier with the new serial number
           setSupplier({ ...supplier, serialNo: newSerialNo.toString() });
         }
       } catch (error) {
         console.error("Error fetching supplier data: ", error);
       }
     };
-
+  
     fetchSupplierData();
-  }, [id]);
+  }, [id]); // Dependency array
+  
+  
 
   const handleInputChange = (field, value) => {
     setSupplier({ ...supplier, [field]: value });
@@ -87,14 +87,14 @@ const AddSupplier = () => {
           ...supplier,
           updatedAt: new Date()
         });
-        alert('Supplier updated successfully!');
+        toast.success('Supplier updated successfully!');
       } else {
         const collectionRef = collection(db, "suppliers");
         await addDoc(collectionRef, {
           ...supplier,
           createdAt: new Date()
         });
-        alert('Supplier added successfully!');
+        toast.success('Supplier added successfully!');
       }
       navigate('/SupplierDetails');
     } catch (error) {

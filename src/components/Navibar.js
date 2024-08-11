@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 
 const Navibar = () => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
@@ -77,8 +78,46 @@ const Navibar = () => {
               <li>
                 <a href="/" className="block py-2 px-5 hover:text-white text-gray-900 rounded-lg hover:bg-gray-100 md:hover:bg-transparent md:hover:bg-zinc-700">Home</a>
               </li>
-              <li>
-                <a href="#" className="block py-2 px-5 hover:text-white text-gray-900 rounded-lg hover:bg-gray-100 md:hover:bg-transparent md:hover:bg-zinc-700">Services</a>
+              <li className="relative">
+                <button
+                  onClick={() => setDropdownOpen(!dropdownOpen)}
+                  className="flex items-center justify-between w-full py-2 px-5 hover:text-white text-gray-900 rounded-lg hover:bg-gray-100 md:hover:bg-transparent md:hover:bg-zinc-700"
+                >
+                  Services
+                  <svg
+                    className="w-4 h-4 ml-2"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+                {dropdownOpen && (
+                  <ul className="absolute left-0 mt-2 w-56 bg-white border border-gray-200 rounded-lg shadow-lg z-10">
+                    <li>
+                      <a href="/ItemEntry" className="block px-4 py-2 text-gray-800 hover:bg-gray-100">
+                        Item Entry
+                      </a>
+                    </li>
+                    <li>
+                      <a href="/VendorSupplierSelection" className="block px-4 py-2 text-gray-800 hover:bg-gray-100">
+                        Vendor & Supplier Data
+                      </a>
+                    </li>
+                    <li>
+                      <a href="/purchase" className="block px-4 py-2 text-gray-800 hover:bg-gray-100">
+                        Purchase Entry
+                      </a>
+                    </li>
+                    <li>
+                      <a href="/sales" className="block px-4 py-2 text-gray-800 hover:bg-gray-100">
+                        Sales Entry
+                      </a>
+                    </li>
+                  </ul>
+                )}
               </li>
               <li>
                 <a href="#" className="block py-2 px-5 hover:text-white text-gray-900 rounded-lg hover:bg-gray-100 md:hover:bg-transparent md:hover:bg-zinc-700">Invoice</a>
