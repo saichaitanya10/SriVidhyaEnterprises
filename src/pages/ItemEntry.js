@@ -26,19 +26,26 @@ const ItemEntry = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const navigate = useNavigate();
 
-  // Fetch items from Firestore in real-time
   useEffect(() => {
     const unsubscribe = onSnapshot(collection(db, 'items'), (querySnapshot) => {
-      const itemsList = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      let itemsList = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  
+      // Sort items by date in descending order
+      itemsList = itemsList.sort((a, b) => {
+        const dateA = dayjs(a.items[0].date);
+        const dateB = dayjs(b.items[0].date);
+        return dateB.isBefore(dateA) ? -1 : 1;
+      });
+  
       setItems(itemsList);
     }, (error) => {
       console.error("Error fetching documents: ", error);
     });
-
+  
     // Clean up the listener on component unmount
     return () => unsubscribe();
   }, []);
-  console.log(items)
+  
 
   // Search functionality
   const handleSearchChange = (event) => {

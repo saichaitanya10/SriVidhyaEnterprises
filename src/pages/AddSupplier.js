@@ -79,7 +79,14 @@ const AddSupplier = () => {
       alert('You must agree to the terms and conditions.');
       return;
     }
-
+  
+    // Check if any field is empty
+    const { serialNo, partyName, contactNumber, gstNumber, address } = supplier;
+    if (!serialNo || !partyName || !contactNumber || !gstNumber || !address) {
+      toast.error('All fields are required.');
+      return;
+    }
+  
     try {
       if (id) {
         const docRef = doc(db, "suppliers", id);
@@ -99,9 +106,10 @@ const AddSupplier = () => {
       navigate('/SupplierDetails');
     } catch (error) {
       console.error("Error saving supplier: ", error);
-      alert('Error submitting the form. Please try again.');
+      toast.error('Error submitting the form. Please try again.');
     }
   };
+  
 
   return (
     <div>

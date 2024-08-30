@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import Navibar from '../components/Navibar';
 import { useNavigate } from 'react-router-dom';
+import { query, orderBy, getDocs, deleteDoc, doc } from "firebase/firestore";
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, getDocs, deleteDoc, doc } from "firebase/firestore";
+import { getFirestore, collection } from "firebase/firestore";
 import toast from 'react-hot-toast';
+import { FiUpload } from "react-icons/fi";
+import { GoDownload } from "react-icons/go";
+import * as XLSX from 'xlsx';
 
 // Firebase configuration
 const firebaseConfig = {
@@ -29,7 +33,8 @@ const SupplierDetails = () => {
   useEffect(() => {
     const fetchSuppliers = async () => {
       try {
-        const querySnapshot = await getDocs(collection(db, "suppliers"));
+        const q = query(collection(db, "suppliers"), orderBy("createdAt", "desc"));
+        const querySnapshot = await getDocs(q);
         const suppliersList = querySnapshot.docs.map(doc => {
           const data = doc.data();
           return {
@@ -80,6 +85,13 @@ const SupplierDetails = () => {
     }
   };
 
+  const exportToCSV = () => {
+    const ws = XLSX.utils.json_to_sheet(filteredSuppliers);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Suppliers');
+    XLSX.writeFile(wb, 'SuppliersData.xlsx');
+  };
+
   return (
     <div>
       <Navibar />
@@ -122,6 +134,13 @@ const SupplierDetails = () => {
               >
                 Search
               </button>
+              {/* <button 
+                onClick={exportToCSV} 
+                className="flex items-center cursor-pointer gap-2 text-white bg-green-500 hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-6 mr-2 py-2"
+              >
+                Download to CSV/XLS
+                <GoDownload className='text-xl'/>
+              </button> */}
             </form>
 
             <button 

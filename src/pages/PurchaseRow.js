@@ -31,6 +31,7 @@ const AddRow = () => {
     InvoiceNumber: '',
     Quantity: '',
     TaxableValue: '',
+    SelectState:'', 
     GstRate: '',
     IGST: '',
     CGST: '',
@@ -250,18 +251,20 @@ const AddRow = () => {
         return 'HSN/SAC Code';
       case 'GstRate':
         return 'GST Rate';
+      
       default:
         return key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
     }
   };
+  const [State,setState]= useState('');
 
   return (
     <div>
       <Navibar />
-      <div className='p-5 w-full bg-zinc-800/40 h-screen backdrop-blur-sm'>
+      <div className='p-10 w-full bg-zinc-800/40 h-screen backdrop-blur-sm'>
         <div className="container mx-auto">
           <div className="flex justify-between items-center mb-2">
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">Enter Purchase Details</h1>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Enter Purchase Details</h1>
             <button
               onClick={() => navigate(-1)}
               className="bg-gray-500 text-white py-2 px-6 rounded hover:bg-gray-600"
@@ -271,12 +274,12 @@ const AddRow = () => {
           </div>
           {rows.map((row, index) => (
             <div key={index} className="mb-4 p-4 border border-gray-300 rounded-lg bg-white">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-xs"> {/* Reduced font size */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-md"> {/* Reduced font size */}
                 {Object.keys(row).map((key, idx) => {
                   if (key === 'PartyName') {
                     return (
                       <div key={idx} className="col-span-1">
-                        <label className="block font-medium text-sm">Party Name</label>
+                        <label className="block font-medium text-md">Party Name</label>
                         <select
                           value={row[key]}
                           onChange={(e) => handleInputChange(index, key, e.target.value)}
@@ -293,7 +296,7 @@ const AddRow = () => {
                   if (key === 'ItemName') {
                     return (
                       <div key={idx} className="col-span-1">
-                        <label className="block font-medium text-sm">Item Name</label>
+                        <label className="block font-medium text-md">Item Name</label>
                         <select
                           value={row[key]}
                           onChange={(e) => handleInputChange(index, key, e.target.value)}
@@ -309,7 +312,7 @@ const AddRow = () => {
                   } if (key === 'PaymentMode') {
                     return (
                       <div key={idx} className="col-span-1">
-                        <label className="block font-medium text-sm">Mode of Payment</label> {/* Adjusted label size */}
+                        <label className="block font-medium text-md">Mode of Payment</label> {/* Adjusted label size */}
                         <select
                           value={row[key]}
                           onChange={(e) => handleInputChange(index, key, e.target.value)}
@@ -326,7 +329,7 @@ const AddRow = () => {
                   } else if (key === 'Remark') {
                     return (
                       <div key={idx} className="col-span-1">
-                        <label className="block font-medium text-sm">Remark</label> {/* Adjusted label size */}
+                        <label className="block font-medium text-md">Remark</label> {/* Adjusted label size */}
                         <input
                           type="text"
                           value={row[key]}
@@ -347,10 +350,66 @@ const AddRow = () => {
                         </button>
                       </div>
                     );
-                  } else if (key === 'GstRate') {
+                  } 
+                  else if (key === 'SelectState') {
+                    return (
+                      <div key={idx} className="col-span-1  ">
+                        <div>
+                         <label className="block font-medium text-md">{formatLabel(key)}</label> {/* Adjusted label size */}
+                        <select
+                          value={row[key]}
+                          onChange={(e) => handleInputChange(index, key, e.target.value)}
+                          className="w-full border p-2 rounded"
+                          >
+                          <option value="">Select GST Type</option>
+                          <option value="Intra">Intra</option>
+                          <option value="Inter">Inter</option>
+                        </select>
+                          </div>
+                          {
+                            row.SelectState =="Intra" && 
+                            <>
+                             <div key={idx} className="col-span-1">
+                        <label className="block font-medium text-md">{formatLabel("IGST")}</label> {/* Adjusted label size */}
+                        <input
+                          type="number"
+                          value={row['IGST']}
+                          onChange={(e) => handleInputChange(index, key, e.target.value)}
+                          className="w-full border p-2 rounded text-md" // Reduced font size
+                        />
+                      </div>
+                            </>
+                    }
+                            {
+                              row.SelectState == "Inter" && 
+                              <>
+                              <div key={idx} className="col-span-1">
+                         <label className="block font-medium text-md">{formatLabel("CGST")}</label> {/* Adjusted label size */}
+                         <input
+                           type="number"
+                           value={row['CGST']}
+                           onChange={(e) => handleInputChange(index, key, e.target.value)}
+                           className="w-full border p-2 rounded text-md" // Reduced font size
+                         />
+                       </div>
+                       <div key={idx} className="col-span-1">
+                         <label className="block font-medium text-md">{formatLabel("SGST")}</label> {/* Adjusted label size */}
+                         <input
+                           type="number"
+                           value={row['SGST']}
+                           onChange={(e) => handleInputChange(index, key, e.target.value)}
+                           className="w-full border p-2 rounded text-md" // Reduced font size
+                         />
+                       </div>
+                             </>
+                             }
+                      </div>
+                    );
+                  }
+                  else if (key === 'GstRate') {
                     return (
                       <div key={idx} className="col-span-1">
-                        <label className="block font-medium text-sm">{formatLabel(key)}</label> {/* Adjusted label size */}
+                        <label className="block font-medium text-md">{formatLabel(key)}</label> {/* Adjusted label size */}
                         <select
                           value={row[key]}
                           onChange={(e) => handleInputChange(index, key, e.target.value)}
@@ -364,43 +423,22 @@ const AddRow = () => {
                         </select>
                       </div>
                     );
-                  } else if (key === 'IGST') {
+                  } 
+
+                   else if (key !== 'IGST' && key !== 'SGST' && key !== 'CGST') {
                     return (
                       <div key={idx} className="col-span-1">
-                        <label className="block font-medium text-sm">{formatLabel(key)}</label> {/* Adjusted label size */}
-                        <input
-                          type="number"
-                          value={row[key]}
-                          onChange={(e) => handleInputChange(index, key, e.target.value)}
-                          className="w-full border p-2 rounded text-xs" // Reduced font size
-                        />
-                      </div>
-                    );
-                  } else if (key === 'CGST' || key === 'SGST') { // Adding CGST and SGST fields after IGST
-                    return (
-                      <div key={idx} className="col-span-1">
-                        <label className="block font-medium text-sm">{formatLabel(key)}</label> {/* Adjusted label size */}
-                        <input
-                          type="number"
-                          value={row[key]}
-                          onChange={(e) => handleInputChange(index, key, e.target.value)}
-                          className="w-full border p-2 rounded text-xs" // Reduced font size
-                        />
-                      </div>
-                    );
-                  } else {
-                    return (
-                      <div key={idx} className="col-span-1">
-                        <label className="block font-medium text-sm">{formatLabel(key)}</label> {/* Adjusted label size */}
+                        <label className="block font-medium text-md">{formatLabel(key)}</label> {/* Adjusted label size */}
                         <input
                           type={key === 'Quantity' || key === 'TaxableValue' ? 'number' : key === 'Date' ? 'date' : 'text'}
                           value={row[key]}
                           onChange={(e) => handleInputChange(index, key, e.target.value)}
-                          className="w-full border p-2 rounded text-xs" // Reduced font size
+                          className="w-full border p-2 rounded text-md" // Reduced font size
                         />
                       </div>
                     );
                   }
+                  
                 })}
               </div>
             </div>

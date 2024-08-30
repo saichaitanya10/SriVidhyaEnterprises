@@ -16,16 +16,28 @@ import { Toaster } from "react-hot-toast";
 import EditSalesRow from "./pages/EditSalesRow";
 import EditPurchaseRow from "./pages/EditPurchaseRow";
 import AddSupplier from "./pages/AddSupplier";
+import Login from './components/Login'
+import { useEffect } from "react";
+import { useNavigate } from 'react-router-dom';
 
 
 function App() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const isLoggedIn = localStorage.getItem('isLoggedIn');
+    if (!isLoggedIn) {
+      navigate('/'); // Redirect to home if already logged in
+    }
+  }, []);
   return (
     <div
       className="bg-cover bg-center h-screen"
       style={{ backgroundImage: `url('https://images.unsplash.com/photo-1721843431268-b8e380c6892f?q=80&w=2854&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')` }}
     >
      <Routes>
-      <Route path="/" element={<Home />} />
+      <Route path="/" element={<Login />} />
+      <Route path="/home" element={<Home />} />
       <Route path="/ItemEntry" element={<ItemEntry />} />
       <Route path="/VendorSupplierSelection" element={<VendorSupplierSelection />} />
       <Route path="/VendorSupplier" element={<VendorSupplier />} />

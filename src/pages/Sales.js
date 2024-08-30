@@ -82,7 +82,7 @@ const Sales = () => {
                   type="search" 
                   id="default-search" 
                   className="block w-full p-4 pl-10 text-sm text-gray-900 rounded-lg bg-white focus:ring-blue-500 focus:border-blue-500" 
-                  placeholder="Search Product Name" 
+                  placeholder="Search Item Name" 
                 />
               </div>
               <button 
@@ -106,7 +106,9 @@ const Sales = () => {
               <thead className="text-xs text-gray-700 uppercase bg-gray-200">
                 <tr>
                   <th scope="col" className="px-2 py-3 w-20">Date</th>
-                  <th scope="col" className="px-2 py-3 w-24">Product Name</th>
+                  <th scope="col" className="px-2 py-3 w-24">Party Name</th>
+                  <th scope="col" className="px-2 py-3 w-24">GST Number</th>
+                  <th scope="col" className="px-2 py-3 w-24">Item Name</th>
                   <th scope="col" className="px-2 py-3 w-40">Description</th>
                   <th scope="col" className="px-2 py-3 w-24">HSN/SAC Code</th>
                   <th scope="col" className="px-2 py-3 w-24">GST Number</th>
@@ -129,6 +131,8 @@ const Sales = () => {
                 {salesData.map((sale) => (
                   <tr key={sale.id} className="bg-white border-b">
                     <td className="px-2 py-4 text-xs">{new Date(sale.createdAt.seconds * 1000).toLocaleDateString()}</td>
+                    <td className="px-2 py-4 text-xs">{sale.partyName}</td>
+                    <td className="px-2 py-4 text-xs">{sale.partyGstNumber}</td>
                     <td className="px-2 py-4 text-xs font-medium text-gray-900">{sale.salesDetails[0].ItemName}</td>
                     <td className="px-2 py-4 text-xs">{sale.salesDetails[0].ItemDescription}</td>
                     <td className="px-2 py-4 text-xs">{sale.salesDetails[0].HsnSacCode}</td>
@@ -144,22 +148,18 @@ const Sales = () => {
                     <td className="px-2 py-4 text-xs">{sale.salesDetails[0].FinalAmount}</td>
                     <td className="px-2 py-4 text-xs">{sale.salesDetails[0].PaymentMode}</td>
                     <td className="px-2 py-4 text-xs">{sale.salesDetails[0].Remark}</td>
-                    <td className={`px-2 py-4 text-xs ${sale.salesDetails[0].PaymentStatus === 'Successful' ? 'text-green-600' : sale.salesDetails[0].PaymentStatus === 'Pending' ? 'text-yellow-600' : ''}`}>
+                    <td className={`px-2 py-4 text-xs ${sale.salesDetails[0].PaymentStatus === 'Successful' ? 'text-green-500' : 'text-red-500 font-bold'}`}>
                       {sale.salesDetails[0].PaymentStatus}
                     </td>
                     <td className="px-2 py-4 text-xs">
-                      <button 
-                        onClick={() => handleEdit(sale.id)} 
-                        className="text-blue-600 hover:underline mr-2"
-                      >
-                        Edit
-                      </button>
-                      <button 
-                        onClick={() => handleDelete(sale.id)} 
-                        className="text-red-600 hover:underline"
-                      >
-                        Delete
-                      </button>
+                      <div className="flex space-x-2">
+                        <button 
+                          onClick={() => handleEdit(sale.id)} 
+                          className="text-blue-600 hover:underline">Edit</button>
+                        <button 
+                          onClick={() => handleDelete(sale.id)} 
+                          className="text-red-600 hover:underline">Delete</button>
+                      </div>
                     </td>
                   </tr>
                 ))}
