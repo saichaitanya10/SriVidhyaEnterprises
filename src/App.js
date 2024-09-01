@@ -1,5 +1,5 @@
 import "./index.css";
-import {Routes,Route} from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import ItemEntry from "./pages/ItemEntry";
 import ItemRow from "./pages/ItemRow";
@@ -16,48 +16,50 @@ import { Toaster } from "react-hot-toast";
 import EditSalesRow from "./pages/EditSalesRow";
 import EditPurchaseRow from "./pages/EditPurchaseRow";
 import AddSupplier from "./pages/AddSupplier";
-import Login from './components/Login'
+import Login from "./components/Login";
 import { useEffect } from "react";
-import { useNavigate } from 'react-router-dom';
-
+import { useNavigate } from "react-router-dom";
+import carImg from "./assets/car.jpeg";
 
 function App() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const isLoggedIn = localStorage.getItem('isLoggedIn');
+    const isLoggedIn = localStorage.getItem("isLoggedIn");
     if (!isLoggedIn) {
-      navigate('/'); // Redirect to home if already logged in
+      navigate("/"); // Redirect to home if already logged in
     }
   }, []);
   return (
     <div
-      className="bg-cover bg-center h-screen"
-      style={{ backgroundImage: `url('https://images.unsplash.com/photo-1721843431268-b8e380c6892f?q=80&w=2854&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')` }}
+      className=" "
+      // style={{ backgroundImage: `url(${carImg})` }}
     >
-     <Routes>
-      <Route path="/" element={<Login />} />
-      <Route path="/home" element={<Home />} />
-      <Route path="/ItemEntry" element={<ItemEntry />} />
-      <Route path="/VendorSupplierSelection" element={<VendorSupplierSelection />} />
-      <Route path="/VendorSupplier" element={<VendorSupplier />} />
-      <Route path="/sales" element={<Sales />} />
-      <Route path="/purchase" element={<Purchase />} />
-      <Route path="/invoicegenerator" element={<InvoiceGenerator />} />
-      <Route path="/add-purchaserow" element={<PurchaseRow />} />
-      <Route path="/add-purchaserow/:id" element={<EditPurchaseRow />} />
-      <Route path="/add-salesrow" element={<AddRow />} />
-      <Route path="/add-salesrow/:id" element={<EditSalesRow />} />
-      <Route path="/ItemRow" element={<ItemRow />} />
-      <Route path="/ItemRow/:id" element={<ItemRow />} />
-      <Route path="/VendorDetails" element={<VendorDetails />} />
-      <Route path="/VendorDetails/:id" element={<VendorDetails />} />
-      <Route path="/SupplierDetails" element={<SupplierDetails />} />
-      <Route path="/AddSupplier/:id" element={<AddSupplier />} />
-      <Route path="/AddSupplier" element={<AddSupplier />} />
-      
-     </Routes>
-     <Toaster/>
+      <Routes>
+        <Route path="/" element={<Login />} />
+        <Route path="/home" element={<Home />} />
+        <Route path="/ItemEntry" element={<ItemEntry />} />
+        <Route
+          path="/VendorSupplierSelection"
+          element={<VendorSupplierSelection />}
+        />
+        <Route path="/VendorSupplier" element={<VendorSupplier />} />
+        <Route path="/sales" element={<Sales />} />
+        <Route path="/purchase" element={<Purchase />} />
+        <Route path="/invoicegenerator" element={<InvoiceGenerator />} />
+        <Route path="/add-purchaserow" element={<PurchaseRow />} />
+        <Route path="/add-purchaserow/:id" element={<EditPurchaseRow />} />
+        <Route path="/add-salesrow" element={<AddRow />} />
+        <Route path="/add-salesrow/:id" element={<EditSalesRow />} />
+        <Route path="/ItemRow" element={<ItemRow />} />
+        <Route path="/ItemRow/:id" element={<ItemRow />} />
+        <Route path="/VendorDetails" element={<VendorDetails />} />
+        <Route path="/VendorDetails/:id" element={<VendorDetails />} />
+        <Route path="/SupplierDetails" element={<SupplierDetails />} />
+        <Route path="/AddSupplier/:id" element={<AddSupplier />} />
+        <Route path="/AddSupplier" element={<AddSupplier />} />
+      </Routes>
+      <Toaster />
     </div>
   );
 }

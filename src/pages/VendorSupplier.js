@@ -111,6 +111,13 @@ const VendorSupplier = () => {
     textareas.forEach((textarea) => autoResizeTextarea(textarea));
   }, [filteredVendors]);
 
+  const highlightText = (text) => {
+    if (!searchTerm.trim()) return text;
+
+    const regex = new RegExp(`(${searchTerm.replace(/[-[\]/{}()*+?.\\^$|]/g, "\\$&")})`, "gi");
+    return text.replace(regex, (match) => `<span class="bg-yellow-300">${match}</span>`);
+  };
+
   return (
     <div>
       <Navibar />
@@ -207,81 +214,43 @@ const VendorSupplier = () => {
                 </tr>
               </thead>
               <tbody>
-                {filteredVendors.map((vendor, index) => (
-                  <tr
-                    key={vendor.id}
-                    className="bg-white border-b border-gray-300"
-                  >
-                    <td className="px-2 py-4 whitespace-nowrap">
-                      {vendor.createdAt}
-                    </td>
-                    <td className="px-2 py-4">
-                      <h1
-                        className="w-full p-2 text-xs overflow-x-auto"
-                      >
-                        {vendor.partyName}
-                      </h1>
-                    </td>
-                    <td className="px-2 py-4">
-                      <h1 className="w-full p-2 text-xs overflow-x-auto">
-                        {vendor.contactNumber}
-                      </h1>
-                    </td>
-                    <td className="px-2 py-4">
-                      <h1
-                        className="w-full p-2 text-xs overflow-x-auto"
-                      >
-                        {vendor.gstNumber}
-                      </h1>
-                    </td>
-                    <td className="px-2 py-4">
-                      <textarea
-                        readOnly
-                        value={vendor.billingAddress}
-                        onChange={(e) =>
-                          handleInputChange(
-                            index,
-                            "billingAddress",
-                            e.target.value
-                          )
-                        }
-                        className="border-none outline-none w-full p-2 text-xs overflow-x-auto resize-none"
-                        rows={1}
-                        onInput={(e) => autoResizeTextarea(e.target)}
-                      />
-                    </td>
-                    <td className="px-2 py-4">
-                      <textarea
-                        readOnly
-                        value={vendor.shippingAddress}
-                        onChange={(e) =>
-                          handleInputChange(
-                            index,
-                            "shippingAddress",
-                            e.target.value
-                          )
-                        }
-                        className="border-none outline-none w-full p-2 text-xs overflow-x-auto resize-none"
-                        rows={1}
-                        onInput={(e) => autoResizeTextarea(e.target)}
-                      />
-                    </td>
-                    <td className="px-2 py-4">
-                      <button
-                        onClick={() => handleEdit(vendor.id)}
-                        className="text-blue-600 hover:underline mr-2"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => handleDelete(vendor.id)}
-                        className="text-red-600 hover:underline"
-                      >
-                        Delete
-                      </button>
+                {filteredVendors.length > 0 ? (
+                  filteredVendors.map((vendor, index) => (
+                    <tr
+                      key={vendor.id}
+                      className="bg-white border-b border-gray-300"
+                    >
+                      <td className="px-2 py-4 whitespace-nowrap">
+                        {vendor.createdAt}
+                      </td>
+                      <td className="px-2 py-4" dangerouslySetInnerHTML={{ __html: highlightText(vendor.partyName) }} />
+                      <td className="px-2 py-4" dangerouslySetInnerHTML={{ __html: highlightText(vendor.contactNumber) }} />
+                      <td className="px-2 py-4" dangerouslySetInnerHTML={{ __html: highlightText(vendor.gstNumber) }} />
+                      <td className="px-2 py-4" dangerouslySetInnerHTML={{ __html: highlightText(vendor.billingAddress) }} />
+                      <td className="px-2 py-4" dangerouslySetInnerHTML={{ __html: highlightText(vendor.shippingAddress) }} />
+                      <td className="px-2 py-4 whitespace-nowrap">
+                        <button
+                          onClick={() => handleEdit(vendor.id)}
+                          className="text-blue-600 hover:underline mr-2"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleDelete(vendor.id)}
+                          className="text-red-600 hover:underline"
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="7" className="px-6 py-4 text-center">
+                      No results found
                     </td>
                   </tr>
-                ))}
+                )}
               </tbody>
             </table>
           </div>
@@ -292,4 +261,3 @@ const VendorSupplier = () => {
 };
 
 export default VendorSupplier;
- 

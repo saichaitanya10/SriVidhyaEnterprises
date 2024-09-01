@@ -45,18 +45,24 @@ const ItemEntry = () => {
     // Clean up the listener on component unmount
     return () => unsubscribe();
   }, []);
-  
 
   // Search functionality
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
   };
 
+  // Function to highlight search term
+  const highlightText = (text) => {
+    if (!searchTerm.trim()) return text;
+    const regex = new RegExp(`(${searchTerm})`, 'gi');
+    return text.replace(regex, '<span class="bg-yellow-300">$1</span>');
+  };
+
   // Filter items based on search term
   const filteredItems = items.filter(item => {
-    // Ensure itemDescription is a string before applying toLowerCase
-    const description = item.itemDescription ? item.itemDescription.toLowerCase() : '';
-    return description.includes(searchTerm.toLowerCase());
+    const description = item.items[0].itemDescription ? item.items[0].itemDescription.toLowerCase() : '';
+    const code = item.items[0].itemCode ? item.items[0].itemCode.toLowerCase() : '';
+    return description.includes(searchTerm.toLowerCase()) || code.includes(searchTerm.toLowerCase());
   });
 
   const handleAddRow = () => {
@@ -65,7 +71,6 @@ const ItemEntry = () => {
 
   // Handle edit action
   const handleEdit = (id) => {
-    // Implement the edit functionality as needed
     navigate(`/ItemRow/${id}`);
   };
 
@@ -107,7 +112,7 @@ const ItemEntry = () => {
                   type="search" 
                   id="default-search" 
                   className="block w-full p-4 pl-10 text-sm text-gray-900 rounded-lg bg-white focus:ring-blue-500 focus:border-blue-500" 
-                  placeholder="Search Item Description" 
+                  placeholder="Search Item Description or Code" 
                   value={searchTerm}
                   onChange={handleSearchChange}
                 />
@@ -152,14 +157,14 @@ const ItemEntry = () => {
                     <tr key={item.id} className="bg-white border-b">
                       <td className="px-6 py-4">{index + 1}</td>
                       <td className="px-6 py-4">{formatDate(item.items[0].date) || 'N/A'}</td>
-                      <td className="px-6 py-4">{item.items[0].itemCode || 'N/A'}</td>
-                      <td className="px-6 py-4">{item.items[0].itemDescription || 'N/A'}</td>
+                      <td className="px-6 py-4" dangerouslySetInnerHTML={{ __html: highlightText(item.items[0].itemCode || 'N/A') }}></td>
+                      <td className="px-6 py-4" dangerouslySetInnerHTML={{ __html: highlightText(item.items[0].itemDescription || 'N/A') }}></td>
                       <td className="px-6 py-4">{item.items[0].hsnCode || 'N/A'}</td>
                       <td className="px-6 py-4">{item.items[0].unitOfMeasurement || 'N/A'}</td>
                       <td className="px-6 py-4 text-green-600">{`₹${item.items[0].purchasePrice || '0'}`}</td>
                       <td className="px-6 py-4">{item.items[0].gstRate ? `${item.items[0].gstRate}%` : 'N/A'}</td>
                       <td className="px-6 py-4">{item.items[0].taxAmount || 'N/A'}</td>
-                      <td className="px-6 py-4 text-green-600">{`₹${item.items[0].purchaseAmountWithTax || '0'}`}</td>
+                      <td className="px-6 py-4 text-green-600">{`₹${item.items[0].totalPrice || '0'}`}</td>
                       <td className="px-6 py-4">
                         <button 
                           onClick={() => handleEdit(item.id)} 
@@ -178,7 +183,7 @@ const ItemEntry = () => {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="11" className="px-6 py-4 text-center text-gray-500">No items found</td>
+                    <td colSpan="11" className="px-6 py-4 text-center">No items found</td>
                   </tr>
                 )}
               </tbody>

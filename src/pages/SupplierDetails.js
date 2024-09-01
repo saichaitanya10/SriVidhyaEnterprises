@@ -5,8 +5,7 @@ import { query, orderBy, getDocs, deleteDoc, doc } from "firebase/firestore";
 import { initializeApp } from "firebase/app";
 import { getFirestore, collection } from "firebase/firestore";
 import toast from 'react-hot-toast';
-import { FiUpload } from "react-icons/fi";
-import { GoDownload } from "react-icons/go";
+import { GoDownload } from "react-icons/go"; // Correct import for GoDownload
 import * as XLSX from 'xlsx';
 
 // Firebase configuration
@@ -92,6 +91,20 @@ const SupplierDetails = () => {
     XLSX.writeFile(wb, 'SuppliersData.xlsx');
   };
 
+  // Function to highlight the search term in a given text
+  const highlightText = (text) => {
+    if (!searchTerm) return text;
+
+    const regex = new RegExp(`(${searchTerm})`, 'gi');
+    const parts = text.split(regex);
+
+    return parts.map((part, index) =>
+      regex.test(part) ? (
+        <span key={index} className="bg-yellow-200">{part}</span>
+      ) : part
+    );
+  };
+
   return (
     <div>
       <Navibar />
@@ -164,29 +177,35 @@ const SupplierDetails = () => {
                 </tr>
               </thead>
               <tbody>
-                {filteredSuppliers.map((supplier) => (
-                  <tr key={supplier.id} className="bg-white border-b border-gray-300">
-                    <td className="px-4 py-4 whitespace-nowrap">{supplier.createdAt}</td>
-                    <td className="px-4 py-4">{supplier.partyName}</td>
-                    <td className="px-4 py-4">{supplier.contactNumber}</td>
-                    <td className="px-4 py-4">{supplier.gstNumber}</td>
-                    <td className="px-4 py-4">{supplier.address}</td>
-                    <td className="px-4 py-4">
-                      <button 
-                        onClick={() => handleEdit(supplier.id)} 
-                        className="text-blue-600 hover:underline mr-2"
-                      >
-                        Edit
-                      </button>
-                      <button 
-                        onClick={() => handleDelete(supplier.id)} 
-                        className="text-red-600 hover:underline"
-                      >
-                        Delete
-                      </button>
-                    </td>
+                {filteredSuppliers.length === 0 ? (
+                  <tr>
+                    <td colSpan="6" className="px-4 py-4 text-center text-gray-500">No results found</td>
                   </tr>
-                ))}
+                ) : (
+                  filteredSuppliers.map((supplier) => (
+                    <tr key={supplier.id} className="bg-white border-b border-gray-300">
+                      <td className="px-4 py-4 whitespace-nowrap">{supplier.createdAt}</td>
+                      <td className="px-4 py-4">{highlightText(supplier.partyName)}</td>
+                      <td className="px-4 py-4">{supplier.contactNumber}</td>
+                      <td className="px-4 py-4">{supplier.gstNumber}</td>
+                      <td className="px-4 py-4">{supplier.address}</td>
+                      <td className="px-4 py-4">
+                        <button 
+                          onClick={() => handleEdit(supplier.id)} 
+                          className="text-blue-600 hover:underline mr-2"
+                        >
+                          Edit
+                        </button>
+                        <button 
+                          onClick={() => handleDelete(supplier.id)} 
+                          className="text-red-600 hover:underline"
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>
