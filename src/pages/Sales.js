@@ -166,7 +166,7 @@ const Sales = () => {
                     Date
                   </th>
                   <th scope="col" className="px-2 py-3 w-24">
-                    Party Name
+                    Vendor Name
                   </th>
                   <th scope="col" className="px-2 py-3 w-24">
                     GST Number

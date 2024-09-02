@@ -149,7 +149,7 @@ const PurchaseRow = () => {
               <thead className="text-xs text-gray-700 uppercase bg-gray-50 border-b">
                 <tr className="bg-gray-200">
                   <th className="px-2 py-2 w-12">Date</th>
-                  <th className="px-2 py-2 w-20">Party Name</th>
+                  <th className="px-2 py-2 w-20">Supplier Name</th>
                   <th className="px-2 py-2 w-20">GST Number</th>
                   <th className="px-2 py-2 w-20">Item Name</th>
                   <th className="px-2 py-2 w-32">Item Description</th>

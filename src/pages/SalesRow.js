@@ -54,7 +54,7 @@ const SalesRow = () => {
   useEffect(() => {
     const fetchSuppliers = async () => {
       try {
-        const q = query(collection(db, "suppliers"));
+        const q = query(collection(db, "vendors"));
         const querySnapshot = await getDocs(q);
         const suppliers = querySnapshot.docs.map((doc) => ({
           id: doc.id,
@@ -277,7 +277,7 @@ const SalesRow = () => {
                     return (
                       <div key={idx} className="col-span-1">
                         <label className="block font-medium text-sm">
-                          Party Name
+                          Vendor Name
                         </label>
                         <select
                           value={row[key]}
@@ -286,7 +286,7 @@ const SalesRow = () => {
                           }
                           className="w-full border p-2 rounded text-sm"
                         >
-                          <option value="">Select Party Name</option>
+                          <option value="">Select Vendor Name</option>
                           {supplierOptions.map((supplier) => (
                             <option
                               key={supplier.id}

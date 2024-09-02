@@ -59,15 +59,17 @@ const AddRow = () => {
   useEffect(() => {
     const fetchVendors = async () => {
       try {
-        const q = collection(db, "vendors");
+        const q = collection(db, "suppliers");
         const querySnapshot = await getDocs(q);
         const vendorsList = querySnapshot.docs.map((doc) => doc.data());
+        // console.log(vendorsList)
         setVendors(vendorsList);
       } catch (error) {
         console.error("Error fetching vendors:", error);
         toast.error("Error fetching vendors: " + error.message);
       }
     };
+    
     const fetchItems = async () => {
       try {
         const q = collection(db, "items");
@@ -327,7 +329,7 @@ const AddRow = () => {
                     return (
                       <div key={idx} className="col-span-1">
                         <label className="block font-medium text-md">
-                          Party Name
+                          Supplier Name
                         </label>
                         <select
                           value={row[key]}
@@ -336,12 +338,13 @@ const AddRow = () => {
                           }
                           className="w-full border p-2 rounded"
                         >
-                          <option value="">Select Party</option>
+                          <option value="">Select Supplier</option>
                           {vendors.map((vendor, vIdx) => (
-                            <option key={vIdx} value={vendor.partyName}>
-                              {vendor.partyName}
-                            </option>
-                          ))}
+  <option key={vIdx} value={vendor.partyName}>
+    {vendor.partyName}
+  </option>
+))}
+  
                         </select>
                       </div>
                     );

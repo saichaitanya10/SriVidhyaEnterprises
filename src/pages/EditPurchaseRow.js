@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Navibar from "../components/Navibar";
 import { initializeApp } from "firebase/app";
-import { getFirestore, doc, getDoc, updateDoc } from "firebase/firestore";
+import { getFirestore, doc, getDoc, updateDoc ,collection,getDocs} from "firebase/firestore";
 import { toast } from "react-hot-toast";
 
 // Firebase configuration
@@ -97,6 +97,19 @@ const EditPurchaseRow = () => {
     };
 
     fetchPurchaseData();
+    const fetchVendors = async () => {
+      try {
+        const q = collection(db, "suppliers");
+        const querySnapshot = await getDocs(q);
+        const vendorsList = querySnapshot.docs.map((doc) => doc.data());
+        // console.log(vendorsList)
+        setVendors(vendorsList);
+      } catch (error) {
+        console.error("Error fetching vendors:", error);
+        toast.error("Error fetching vendors: " + error.message);
+      }
+    };
+    fetchVendors();
   }, [id]);
 
   const handleInputChange = (key, value) => {
@@ -160,6 +173,7 @@ const EditPurchaseRow = () => {
     }
   };
 
+  const [vendors, setVendors] = useState([]);
   return (
     <div>
       <Navibar />
@@ -179,6 +193,30 @@ const EditPurchaseRow = () => {
           <div className="p-4 border border-gray-300 rounded-lg bg-white">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {Object.keys(row).map((key, idx) => {
+                  if (key === "PartyName") {
+                    return (
+                      <div key={idx} className="col-span-1">
+                        <label className="block font-medium text-md">
+                          Supplier Name
+                        </label>
+                        <select
+                          value={row[key]}
+                          onChange={(e) =>
+                            handleInputChange( key, e.target.value)
+                          }
+                          className="w-full border p-2 rounded"
+                        >
+                          <option value="">Select Supplier</option>
+                          {vendors.map((vendor, vIdx) => (
+  <option key={vIdx} value={vendor.partyName}>
+    {vendor.partyName}
+  </option>
+))}
+  
+                        </select>
+                      </div>
+                    );
+                  }
                 if (key === "PaymentMode") {
                   return (
                     <div key={idx} className="col-span-1">
@@ -224,7 +262,8 @@ const EditPurchaseRow = () => {
                       </button>
                     </div>
                   );
-                } else if (key === "SelectState") {
+                } 
+                else if (key === "SelectState") {
                   return (
                     <div key={idx} className="col-span-1  ">
                       <div>
