@@ -4,7 +4,7 @@ import img from "../assets/upscale.png";
 
 const Login = () => {
   // Hardcoded credentials
-  const hardcodedUsername = "Srividhyaenp";
+  const hardcodedUsername = "Srividhyaent";
   const hardcodedPassword = "Vidhya*7036";
 
   // State for input fields and login status
