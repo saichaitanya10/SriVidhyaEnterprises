@@ -10,6 +10,7 @@ import {
   deleteDoc,
   doc,
 } from "firebase/firestore";
+import { CSVLink } from 'react-csv';
 import toast from "react-hot-toast";
 import dayjs from "dayjs";
 
@@ -75,6 +76,21 @@ const PurchaseRow = () => {
     );
   };
 
+  const DownloadCSVButton = () => {
+    const transformedData = transformData(purchases); // Apply the transformation here
+  
+    return (
+      <CSVLink
+        data={transformedData}
+        filename={"purchaseData.csv"}
+        className="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-8 mr-2 py-2"
+        target="_blank"
+      >
+        Download
+      </CSVLink>
+    );
+  };
+
   // Filter purchases based on search query
   const filteredPurchases = purchases.filter((purchase) =>
     purchase.purchaseDetails.some((row) =>
@@ -83,6 +99,34 @@ const PurchaseRow = () => {
       )
     )
   );
+
+  const transformData = (data) => {
+    // Flatten the purchaseDetails array and create an array of objects
+    return data.flatMap(purchase => 
+      purchase.purchaseDetails.map(detail => ({
+        Date: detail.Date ? dayjs(detail.Date).format("D/M/YYYY") : '', 
+        PartyName: detail.PartyName || '',
+        GstNumber: detail.GstNumber || '',
+        ItemName: detail.ItemName || '',
+        AddMoreItems: detail.AddMoreItems || '',
+        ItemDescription: detail.ItemDescription || '',
+        HsnSacCode: detail.HsnSacCode || '',
+        InvoiceNumber: detail.InvoiceNumber || '',
+        Quantity: detail.Quantity || '',
+        TaxableValue: detail.TaxableValue || '',
+        GstRate: detail.GstRate || '',
+        CGST: detail.CGST || '',
+        SGST: detail.SGST || '',
+        IGST: detail.IGST || '',
+        TotalTax: detail.TotalTax || '',
+        FinalAmount: detail.FinalAmount || '',
+        PaymentMode: detail.PaymentMode || '',
+        PaymentStatus: detail.PaymentStatus || '',
+        Remark: detail.Remark || ''
+      }))
+    );
+  };
+  
 
   return (
     <div>
@@ -130,10 +174,11 @@ const PurchaseRow = () => {
               </div>
               <button
                 type="submit"
-                className="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-8 py-2"
+                className="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none mx-2 my-1 focus:ring-blue-300 font-medium rounded-lg text-sm px-8 py-2"
               >
                 Search
               </button>
+              <DownloadCSVButton />
             </form>
 
             <button
@@ -152,6 +197,7 @@ const PurchaseRow = () => {
                   <th className="px-2 py-2 w-20">Supplier Name</th>
                   <th className="px-2 py-2 w-20">GST Number</th>
                   <th className="px-2 py-2 w-20">Item Name</th>
+                  <th className="px-2 py-2 w-20">More Items</th>
                   <th className="px-2 py-2 w-32">Item Description</th>
                   <th className="px-2 py-2 w-20">HSN/SAC Code</th>
                   <th className="px-2 py-2 w-20">Invoice Number</th>
@@ -191,6 +237,9 @@ const PurchaseRow = () => {
                           <td className="px-2 py-2">{row.GstNumber}</td>
                           <td className="px-2 py-2">
                             {highlightText(row.ItemName)}
+                          </td>
+                          <td className="px-2 py-2">
+                            {highlightText(row.AddMoreItems)}
                           </td>
                           <td className="px-2 py-4">
                             {highlightText(row.ItemDescription)}

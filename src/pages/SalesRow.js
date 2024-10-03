@@ -28,6 +28,7 @@ const SalesRow = () => {
       PartyName: "",
       GstNumber: "",
       ItemName: "",
+      AddMoreItems: "",
       ItemDescription: "",
       HsnSacCode: "",
       InvoiceNumber: "",

@@ -34,6 +34,7 @@ const AddRow = () => {
       PartyName: "",
       GstNumber: "",
       ItemName: "",
+      AddMoreItems: "",
       ItemDescription: "",
       HsnSacCode: "",
       InvoiceNumber: "",
@@ -62,7 +63,7 @@ const AddRow = () => {
         const q = collection(db, "suppliers");
         const querySnapshot = await getDocs(q);
         const vendorsList = querySnapshot.docs.map((doc) => doc.data());
-        // console.log(vendorsList)
+        console.log("vendorsList:", vendorsList);
         setVendors(vendorsList);
       } catch (error) {
         console.error("Error fetching vendors:", error);
@@ -131,46 +132,28 @@ const AddRow = () => {
 
   const fetchPartyDetails = async (partyName, index) => {
     try {
-      console.log("Fetching vendor details for partyName:", partyName);
-
-      // Fetch all documents from the 'vendors' collection
-      const q = query(collection(db, "vendors"));
-      const querySnapshot = await getDocs(q);
-      console.log("Query results:", querySnapshot.docs);
-
-      let found = false;
-
-      querySnapshot.forEach((doc) => {
-        const data = doc.data();
-
-        if (
-          data.partyName &&
-          data.partyName.toLowerCase() === partyName.toLowerCase()
-        ) {
-          const updatedRows = [...rows];
+      const vendor = vendors.find(vendor => vendor.partyName.toLowerCase() === partyName.toLowerCase());
+      console.log("Vendor found:", vendor);
+      if (vendor) {
+        setRows(prevRows => {
+          const updatedRows = [...prevRows];
           updatedRows[index] = {
             ...updatedRows[index],
-            GstNumber: data.gstNumber || "",
-            BillingAddress: data.billingAddress || "",
-            ShippingAddress: data.shippingAddress || "",
+            GstNumber: vendor.gstNumber || "", // Set the GST number from the vendor
           };
-          setRows(updatedRows);
-          toast.success("Vendor found.");
-          found = true;
-        }
-      });
-
-      if (!found) {
-        toast.error("Vendor not found.");
+          console.log("Updated Rows:", updatedRows); // Log here
+          return updatedRows;
+        });
+        toast.success("Supplier found.");
+      } else {
+        toast.error("Supplier not found.");
       }
     } catch (error) {
-      console.error("Error fetching vendor details:", error);
-      setTimeout(() => {
-        toast.error("Error fetching vendor details: " + error.message);
-      }, 2000); // 2000 milliseconds = 2 seconds
+      toast.error("Error fetching vendor details: " + error.message);
     }
   };
-
+  
+  
   const handleInputChange = (index, field, value) => {
     const newRows = rows.map((row, i) => {
       if (i === index) {
@@ -246,6 +229,7 @@ const AddRow = () => {
         {
           Date: "",
           ItemName: "",
+          AddMoreItems: "",
           ItemDescription: "",
           PartyName: "",
           GstNumber: "",
@@ -346,6 +330,22 @@ const AddRow = () => {
 ))}
   
                         </select>
+                      </div>
+                    );
+                  }
+                  if (key === "GstNumber") {
+                    return (
+                      <div key={idx} className="col-span-1">
+                        <label className="block font-medium text-md">GST Number</label>
+                          <input
+
+                            type="text"
+                            value={vendors.find(vendor => vendor.partyName === row.PartyName)?.gstNumber || row[key]}
+                            onChange={(e) =>
+                              handleInputChange(index, key, e.target.value)
+                            }
+                            className="w-full border p-2 rounded"
+                          />
                       </div>
                     );
                   }

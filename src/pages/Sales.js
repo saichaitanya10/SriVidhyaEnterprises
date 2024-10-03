@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import Navibar from "../components/Navibar";
 import { useNavigate } from "react-router-dom";
 import { initializeApp } from "firebase/app";
+import { CSVLink } from 'react-csv';
+
 import {
   getFirestore,
   collection,
@@ -21,6 +23,8 @@ const firebaseConfig = {
   appId: "1:877623071348:web:1d75d4660a42846d38b721",
   measurementId: "G-NZBHTQHH4N",
 };
+
+
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
@@ -49,6 +53,21 @@ const Sales = () => {
 
     fetchSalesData();
   }, []);
+
+  const DownloadCSVButton = () => {
+    const transformedData = transformData(salesData); // Apply the transformation here
+  
+    return (
+      <CSVLink
+        data={transformedData}
+        filename={"salesData.csv"}
+        className="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-8 mr-2 py-2"
+        target="_blank"
+      >
+        Download
+      </CSVLink>
+    );
+  };
 
   const handleEdit = (id) => {
     navigate(`/add-salesrow/${id}`);
@@ -96,6 +115,30 @@ const Sales = () => {
       "gi"
     );
     return text.replace(regex, "<mark>$1</mark>");
+  };
+
+  const transformData = (data) => {
+    return data.map(item => ({
+      Date: item.Date,
+      partyName: item.PartyName, 
+      GstNumber: item.GstNumber,
+      ItemName: item.ItemName,
+      AddMoreItems: item.AddMoreItems,
+      ItemDescription: item.ItemDescription,
+      HsnSacCode: item.HsnSacCode,
+      InvoiceNumber: item.InvoiceNumber,
+      Quantity: item.Quantity,
+      TaxableValue: item.TaxableValue,
+      gstrate: item.GstRate,
+      IGST: item.IGST,
+      sgst: item.SGST,
+      cgst: item.CGST,
+      TotalTax: item.TotalTax,
+      FinalAmount: item.FinalAmount,
+      paymentmode: item.PaymentMode,
+      PaymentStatus: item.PaymentStatus,
+      Remark: item.Remark,         
+    }));
   };
 
   return (
@@ -148,6 +191,7 @@ const Sales = () => {
               >
                 Search
               </button>
+              <DownloadCSVButton />
             </form>
 
             <button
@@ -173,6 +217,9 @@ const Sales = () => {
                   </th>
                   <th scope="col" className="px-2 py-3 w-24">
                     Item Name
+                  </th>
+                  <th scope="col" className="px-2 py-3 w-24">
+                    More Items
                   </th>
                   <th scope="col" className="px-2 py-3 w-40">
                     Description
@@ -239,6 +286,9 @@ const Sales = () => {
                       </td>
                       <td className="px-2 py-2 text-center">
                         {sale.ItemName || "N/A"}
+                      </td>
+                      <td className="px-2 py-2 text-center">
+                        {sale.AddMoreItems || "N/A"}
                       </td>
                       <td className="px-2 py-2 text-center">
                         {sale.ItemDescription || "N/A"}

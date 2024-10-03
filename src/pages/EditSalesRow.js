@@ -33,6 +33,7 @@ const EditSalesRow = () => {
   const [row, setRow] = useState({
     Date: "",
     ItemName: "",
+    AddMoreItems: "",
     ItemDescription: "",
     HsnSacCode: "",
     GstNumber: "",
@@ -86,6 +87,7 @@ const EditSalesRow = () => {
           const mappedData = {
             Date: salesDetails.Date || "",
             ItemName: salesDetails.ItemName || "",
+            AddMoreItems: salesDetails.AddMoreItems || "",
             ItemDescription: salesDetails.ItemDescription || "",
             HsnSacCode: salesDetails.HsnSacCode || "",
             GstNumber: salesDetails.GstNumber || "",
